@@ -1,0 +1,2296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>AutoFlow | Process Run</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-light: #eef2ff;
+      --accent: #10b981;
+      --accent-hover: #059669;
+      --bg: #0f172a;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --input-bg: #f8fafc;
+      --danger: #ef4444;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    * { box-sizing: border-box; outline: none; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+      color: var(--text-main);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ============ SIDEBAR - PROFESSIONAL STYLE ============ */
+    .sidebar {
+      width: 260px;
+      height: 100vh;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      position: fixed;
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .sidebar .logo {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 50px;
+      display: flex;
+      align-items: center; 
+      gap: 10px;
+      color: #fff;
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar .logo:hover {
+      background: rgba(99, 102, 241, 0.15);
+      transform: translateY(-2px);
+    }
+    
+    .sidebar .logo i { 
+      color: var(--primary); 
+      font-size: 24px;
+      filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5));
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: 12px;
+      color: #94a3b8;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .nav-item::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 3px;
+      background: var(--primary);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+    
+    .nav-item.active {
+      background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    }
+    
+    .nav-item.active::before {
+      transform: scaleY(1);
+    }
+    
+    .nav-item:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+      transform: translateX(4px);
+    }
+    
+    .nav-item i {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* ============ MAIN CONTENT ============ */
+    .main {
+      margin-left: 260px;
+      width: calc(100% - 260px);
+      min-height: 100vh;
+      padding: 40px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    header h1 { font-size: 24px; font-weight: 700; color: var(--bg); margin: 0; }
+
+    .user-controls { display: flex; align-items: center; gap: 15px; }
+    .user-badge {
+      background: white;
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 14px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .logout-btn {
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+      border: none;
+      padding: 8px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .logout-btn:hover { background: var(--danger); color: white; }
+
+    /* ============ CARDS ============ */
+    .card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    
+    .card h3 {
+      font-size: 18px;
+      margin: 0 0 24px 0;
+      color: var(--bg);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--primary-light);
+    }
+    
+    .card h3 i {
+      color: var(--primary);
+      font-size: 20px;
+    }
+
+    /* ============ FILTER GRID ============ */
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .input-group label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    
+    .input-group label i {
+      font-size: 12px;
+      color: var(--primary);
+    }
+
+    select {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1.5px solid var(--border);
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    /* ============ MULTI-SELECT DROPDOWN ============ */
+    .multi-select {
+      position: relative;
+      width: 100%;
+    }
+    .multi-select-header {
+      background: var(--input-bg);
+      border: 1.5px solid var(--border);
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+      min-height: 44px;
+    }
+    .multi-select-header:hover {
+      border-color: var(--primary);
+    }
+    .multi-select-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-top: 5px;
+      max-height: 250px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    }
+    .multi-select-dropdown.show {
+      display: block;
+    }
+    
+    /* Dropdown Actions */
+    .dropdown-actions {
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      border-bottom: 2px solid var(--border);
+      background: #f8fafc;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    .dropdown-action-btn {
+      flex: 1;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: white;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    
+    .dropdown-action-btn:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    .dropdown-action-btn i {
+      font-size: 11px;
+    }
+    
+    .dropdown-items {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 14px;
+      border-bottom: 1px solid #f1f5f9;
+      transition: background 0.2s;
+    }
+    .checkbox-item:last-child {
+      border-bottom: none;
+    }
+    .checkbox-item:hover {
+      background: #f8fafc;
+    }
+    .checkbox-item input {
+      margin-right: 10px;
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: var(--primary);
+    }
+    .empty-state {
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* ============ BUTTONS ============ */
+    .button-row { display: flex; gap: 12px; }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: 0.3s;
+    }
+    .btn-run { background: var(--accent); color: white; }
+    .btn-run:hover { background: #059669; transform: translateY(-1px); }
+    .btn-reset { background: #ffffff; border: 1.5px solid var(--border); color: var(--text-muted); }
+    .btn-reset:hover { background: #f1f5f9; transform: translateY(-1px); }
+
+    /* ============ TABLE AREA ============ */
+    .table-container {
+      display: none;
+      padding: 0;
+      overflow: visible;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .table-header {
+      padding: 20px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      background: white;
+    }
+    .table-header h2 { font-size: 18px; margin: 0; font-weight: 700; color: var(--bg); }
+
+    table { 
+      width: 100%; 
+      border-collapse: separate;
+      border-spacing: 0;
+      background: white;
+    }
+    
+    th {
+      text-align: left;
+      padding: 14px 16px;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      background: linear-gradient(to bottom, #f8fafc 0%, #f1f5f9 100%);
+      border-bottom: 2px solid var(--border);
+      font-weight: 700;
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    td {
+      padding: 14px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid #f1f5f9;
+      color: var(--text-main);
+      vertical-align: middle;
+    }
+    
+    tbody tr {
+      transition: background-color 0.2s;
+    }
+    
+    tbody tr:hover {
+      background-color: #f8fafc;
+    }
+    
+    /* Column widths for testcase table */
+    th:nth-child(1), td:nth-child(1) { width: 160px; } /* Testcase Code */
+    th:nth-child(2), td:nth-child(2) { width: 120px; white-space: normal; word-wrap: break-word; line-height: 1.4; } /* Steps */
+    th:nth-child(3), td:nth-child(3) { width: 220px; white-space: normal; word-wrap: break-word; line-height: 1.4; } /* Implementation Status */
+    th:nth-child(4), td:nth-child(4) { width: 120px; } /* Process Status */
+    th:nth-child(5), td:nth-child(5) { width: 140px; } /* Batch Code */
+    th:nth-child(6), td:nth-child(6) { width: 80px; text-align: center; } /* Activity */
+    th:nth-child(7), td:nth-child(7) { width: 100px; text-align: center; } /* Actions */
+
+    .refresh-icon {
+      cursor: pointer;
+      color: var(--primary);
+      font-size: 18px;
+      transition: all 0.3s;
+      padding: 8px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .refresh-icon:hover { 
+      transform: rotate(180deg); 
+      background: var(--primary-light);
+    }
+
+    /* Action Icons */
+    .action-icon {
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text-muted);
+      margin: 0 4px;
+      padding: 6px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
+      width: 32px;
+      height: 32px;
+    }
+    .action-icon:hover {
+      color: var(--primary);
+      background: var(--primary-light);
+      transform: scale(1.1);
+    }
+    .action-icon.view-icon:hover {
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.1);
+    }
+    .action-icon.download-icon:hover {
+      color: #f59e0b;
+      background: rgba(245, 158, 11, 0.1);
+    }
+
+    /* ============ UTILS ============ */
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    /* ============ RESPONSIVE DESIGN ============ */
+    
+    /* Tablets and smaller desktops (1024px and below) */
+    @media (max-width: 1024px) {
+      .sidebar { width: 220px; padding: 20px 15px; }
+      .main { margin-left: 220px; width: calc(100% - 220px); padding: 30px; }
+      header h1 { font-size: 22px; }
+      .filter-grid { gap: 12px; }
+      .input-group { min-width: 140px; }
+      table { font-size: 13px; }
+      th, td { padding: 12px 15px; }
+    }
+
+    /* Tablets (768px and below) */
+    @media (max-width: 768px) {
+      .sidebar { width: 200px; padding: 20px 10px; }
+      .sidebar .logo { font-size: 18px; margin-bottom: 30px; }
+      .nav-item { padding: 12px 14px; font-size: 13px; }
+      
+      .main { margin-left: 200px; width: calc(100% - 200px); padding: 20px; }
+      header { flex-direction: column; align-items: flex-start; gap: 15px; }
+      header h1 { font-size: 20px; }
+      .user-controls { width: 100%; justify-content: space-between; }
+      .user-badge { font-size: 13px; padding: 6px 12px; }
+      
+      .card { padding: 20px; }
+      .card h3 { font-size: 16px; }
+      .filter-grid { 
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+        gap: 12px; 
+      }
+      
+      .button-row { flex-direction: column; gap: 10px; }
+      .btn { width: 100%; justify-content: center; padding: 10px 20px; font-size: 13px; }
+      
+      /* Make table scrollable horizontally */
+      .table-container { overflow-x: auto; }
+      table { min-width: 800px; }
+      th, td { padding: 10px 12px; font-size: 12px; }
+      
+      .multi-select-header { font-size: 13px; padding: 10px 12px; }
+      .checkbox-item { font-size: 13px; padding: 8px 12px; }
+    }
+
+    /* Mobile devices (480px and below) */
+    @media (max-width: 480px) {
+      .sidebar { 
+        width: 100%; 
+        height: auto; 
+        position: relative; 
+        padding: 15px; 
+      }
+      .sidebar .logo { font-size: 16px; margin-bottom: 20px; }
+      .nav-item { padding: 10px 12px; font-size: 12px; }
+      
+      .main { 
+        margin-left: 0; 
+        width: 100%; 
+        padding: 15px; 
+      }
+      
+      header { gap: 10px; }
+      header h1 { font-size: 18px; }
+      .user-controls { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .user-badge { font-size: 12px; padding: 5px 10px; }
+      
+      .back-link { font-size: 13px; margin-bottom: 15px; }
+      
+      .card { padding: 15px; border-radius: 15px; }
+      .card h3 { font-size: 15px; gap: 8px; }
+      .card h3 i { font-size: 16px; }
+      
+      .filter-grid { 
+        grid-template-columns: 1fr; 
+        gap: 12px; 
+      }
+      
+      .button-row { gap: 8px; }
+      .btn { padding: 10px; font-size: 13px; }
+      
+      .table-header { 
+        flex-direction: column; 
+        align-items: flex-start; 
+        gap: 10px; 
+        padding: 15px 20px; 
+      }
+      .table-header h2 { font-size: 16px; }
+      
+      table { min-width: 700px; }
+      th, td { padding: 8px 10px; font-size: 11px; }
+      
+      .multi-select-dropdown { max-height: 200px; }
+    }
+
+    /* Extra small devices (360px and below) */
+    @media (max-width: 360px) {
+      .main { padding: 10px; }
+      .card { padding: 12px; }
+      header h1 { font-size: 16px; }
+      .btn { font-size: 12px; padding: 8px; }
+      th, td { padding: 6px 8px; font-size: 10px; }
+      table { min-width: 600px; }
+    }
+    .pagination-container {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 14px;
+      margin-top: 18px;
+      padding: 10px 4px;
+    }
+
+    .page-text {
+        font-size: 15px;
+        font-weight: 500;
+        color: #64748b;
+    }
+
+    .pagination-arrows {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .page-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        color: #0f172a;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .page-btn:hover:not(:disabled) {
+        background: #f8fafc;
+        transform: translateY(-1px);
+    }
+
+    .page-btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+    .page-btn i {
+        font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <aside class="sidebar">
+    <a href="#" class="logo"><i class="fa-solid fa-bolt-lightning"></i> AUTOFLOW</a>
+    <nav>
+      <a href="/automationserv/template_summary-form/" class="nav-item"><i class="fa-solid fa-layer-group"></i> Templates</a>
+      <a href="/automationserv/run_summary-form/" class="nav-item active"><i class="fa-solid fa-play"></i> Run</a>
+<!--      <a href="/automationserv/report_summary-form/" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Report</a>-->
+    </nav>
+  </aside>
+
+  <main class="main">
+    <header>
+      <h1>Process Run</h1>
+      <div class="user-controls">
+        <div class="user-badge">
+          <i class="fa-regular fa-circle-user"></i>
+          <span id="usernameDisplay">Guest</span>
+        </div>
+        <button class="logout-btn logout" title="Logout">
+          <i class="fa-solid fa-power-off"></i>
+        </button>
+      </div>
+    </header>
+
+    <a href="/automationserv/run_summary-form/" class="back-link">
+      <i class="fa-solid fa-arrow-left"></i> Back to Summary
+    </a>
+
+    <section class="card">
+      <h3><i class="fa-solid fa-sliders"></i> Process Configuration</h3>
+      <div class="filter-grid">
+        <div class="input-group">
+          <label><i class="fa-solid fa-building"></i> Client Name</label>
+          <select id="client">
+            <option value="" disabled selected>Choose client</option>
+            <option value="NF">NF</option>
+            <option value="NAC">NAC</option>
+            <option value="KVB">KVB</option>
+            <option value="VBHC">VBHC</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label><i class="fa-solid fa-server"></i> Environment</label>
+          <select id="environment">
+            <option value="" disabled selected>Select env</option>
+            <option value="DO">DO</option>
+            <option value="SIT">SIT</option>
+            <option value="UAT">UAT</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label><i class="fa-solid fa-cube"></i> Module</label>
+          <select id="module">
+            <option value="" disabled selected>Select module</option>
+            <option value="Vendor">Vendor</option>
+            <option value="ECF">ECF</option>
+            <option value="AP">AP</option>
+            <option value="ememo">ememo</option>
+            <option value="TA">TA</option>
+            <option value="PRPO">PRPO</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label><i class="fa-solid fa-code"></i> Scenario Code(s)</label>
+          <div class="multi-select" id="testcase-multi-select">
+            <div class="multi-select-header" id="testcase-header">
+              <span id="testcase-text">Select Codes...</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="multi-select-dropdown" id="testcase-dropdown">
+              <div class="dropdown-actions">
+                <button type="button" class="dropdown-action-btn" id="select-all-btn">
+                  <i class="fa-solid fa-check-double"></i> Select All
+                </button>
+                <button type="button" class="dropdown-action-btn" id="clear-all-btn">
+                  <i class="fa-solid fa-xmark"></i> Clear
+                </button>
+              </div>
+              <div class="dropdown-items" id="testcase-items">
+                <div class="empty-state">Please select Client, Env, and Module first.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="button-row">
+        <button class="btn btn-run">
+          <i class="fa-solid fa-play"></i> Initiate Run
+        </button>
+        <button class="btn btn-reset" id="resetBtn" type="button">
+          <i class="fa-solid fa-arrows-rotate"></i> Reset
+        </button>
+      </div>
+    </section>
+
+    <section class="card table-container" id="table-container">
+      <div class="table-header">
+        <h2>Scenario Progress</h2>
+        <i class="fa-solid fa-rotate refresh-icon" id="refresh-icon" title="Refresh Status"></i>
+      </div>
+      <div style="overflow-x: auto; max-width: 100%;">
+        <table id="scenario-table">
+          <thead>
+            <tr>
+              <th>Testcase Code</th>
+              <th>Steps</th>
+              <th>Implementation Status</th>
+              <th>Process Status</th>
+              <th>Batch Code</th>
+              <th style="text-align: center;">Activity</th>
+              <th style="text-align: center;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="scenario-body"></tbody>
+        </table>
+      </div>
+      <div id="pagination-container" class="pagination-container">
+        <span id="current-page" class="page-text">Page 1</span>
+        <div class="pagination-arrows">
+          <button id="prev-page-btn" class="page-btn" disabled><i class="fa-solid fa-chevron-left"></i></button>
+          <button id="next-page-btn" class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // --- SIMPLE TOKEN GUARD (frontend-only) ---
+    (function enforceAuth() {
+      const token = sessionStorage.getItem("authToken");
+      if (!token) {
+        sessionStorage.clear();
+        window.location.href = "/userserv/authtoken-form/";
+      }
+    })();
+
+    // --- AUTH-AWARE FETCH WRAPPER ---
+    function authFetch(url, options = {}) {
+      const token = sessionStorage.getItem("authToken");
+      const merged = { credentials: "same-origin", ...(options || {}) };
+      const baseHeaders = (options && options.headers) ? options.headers : {};
+      merged.headers = { ...baseHeaders };
+      if (token) merged.headers["Authorization"] = `Token ${token}`;
+      return fetch(url, merged).then(res => {
+        if (res.status === 401 || res.status === 403) {
+          sessionStorage.clear();
+          window.location.href = "/userserv/authtoken-form/";
+          throw new Error("Unauthorized");
+        }
+        return res;
+      });
+    }
+
+    const clientSelect = document.getElementById("client");
+    const moduleSelect = document.getElementById("module");
+    const environmentSelect = document.getElementById("environment");
+
+    // Multi-select elements
+    const testcaseHeader = document.getElementById("testcase-header");
+    const testcaseText = document.getElementById("testcase-text");
+    const testcaseDropdown = document.getElementById("testcase-dropdown");
+
+    const tableContainer = document.getElementById("table-container");
+    const tableBody = document.getElementById("scenario-body");
+    const refreshIcon = document.getElementById("refresh-icon");
+    const runButton = document.querySelector(".btn-run");
+    const resetBtn = document.getElementById("resetBtn");
+
+    const RUN_PROCESS_STATE_KEY = "runProcessState_v1";
+
+    // Helper function to get CSRF token from cookies
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    function safeJsonParse(raw, fallback) {
+      try { return JSON.parse(raw); } catch { return fallback; }
+    }
+
+    function readRunProcessState() {
+      const state = safeJsonParse(sessionStorage.getItem(RUN_PROCESS_STATE_KEY), null);
+      if (!state || typeof state !== "object") return null;
+      return {
+        client: state.client || "",
+        environment: state.environment || "",
+        module: state.module || "",
+        selectedCodes: Array.isArray(state.selectedCodes) ? state.selectedCodes : [],
+        running: state.running === true,
+        runningRowIds: Array.isArray(state.runningRowIds) ? state.runningRowIds : []
+      };
+    }
+
+    function writeRunProcessState(next) {
+      const prev = readRunProcessState() || { client: "", environment: "", module: "", selectedCodes: [] };
+      const merged = { ...prev, ...(next || {}), ts: Date.now() };
+      sessionStorage.setItem(RUN_PROCESS_STATE_KEY, JSON.stringify(merged));
+    }
+
+    function clearRunProcessState() {
+      sessionStorage.removeItem(RUN_PROCESS_STATE_KEY);
+    }
+
+    function applySelectedCodes(codes) {
+      const set = new Set(Array.isArray(codes) ? codes : []);
+      const testcaseItems = document.getElementById('testcase-items');
+      if (!testcaseItems) return;
+      const checkboxes = Array.from(testcaseItems.querySelectorAll('input[type="checkbox"]'));
+      checkboxes.forEach(cb => {
+        cb.checked = set.has(cb.value);
+      });
+    }
+
+    // Toggle multi-select dropdown
+    testcaseHeader.addEventListener("click", (e) => {
+      e.stopPropagation();
+      testcaseDropdown.classList.toggle("show");
+    });
+
+    // Close multi-select dropdown when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest("#testcase-multi-select")) {
+        testcaseDropdown.classList.remove("show");
+      }
+    });
+
+    // Prevent closing when clicking inside the dropdown
+    testcaseDropdown.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+    
+    // Select All button
+    document.getElementById('select-all-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const checkboxes = document.querySelectorAll('#testcase-items input[type="checkbox"]');
+      checkboxes.forEach(cb => {
+        if (!cb.checked) {
+          cb.checked = true;
+        }
+      });
+      handleTestcaseSelection();
+    });
+    
+    // Clear button
+    document.getElementById('clear-all-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const checkboxes = document.querySelectorAll('#testcase-items input[type="checkbox"]');
+      checkboxes.forEach(cb => {
+        if (cb.checked) {
+          cb.checked = false;
+        }
+      });
+      handleTestcaseSelection();
+    });
+
+    // Map testcase_code -> overall scenario name, populated from template_summary
+    const scenarioByCode = {};
+
+    function fetchTestcaseCodes(preselectCodes = null) {
+      const client = clientSelect.value;
+      const module = moduleSelect.value;
+      const env = environmentSelect.value;
+
+      if (client && module && env) {
+        // Reset dropdown while loading
+        testcaseText.textContent = "Loading...";
+        const testcaseItems = document.getElementById('testcase-items');
+        if (testcaseItems) {
+          testcaseItems.innerHTML = '<div class="empty-state">Loading codes...</div>';
+        }
+
+        return authFetch(`/automationserv/dropdown_testcase?clientname=${client}&module=${module}&environment=${env}`, {
+          method: 'POST',
+          cache: "no-store",
+          headers: { 'Content-Type': 'application/json' }
+        })
+        .then(res => res.json())
+        .then(async data => {
+          const testcaseItems = document.getElementById('testcase-items');
+          testcaseItems.innerHTML = '';
+          testcaseText.textContent = "Select Codes...";
+
+          let rawCodes = Array.isArray(data) ? data : [];
+
+          if (!rawCodes.length) {
+            testcaseItems.innerHTML = '<div class="empty-state">No codes available</div>';
+            return;
+          }
+
+          // Deduplicate while preserving order.
+          const seen = new Set();
+          const codes = [];
+          rawCodes.forEach(code => {
+            const c = String(code);
+            if (!seen.has(c)) {
+              seen.add(c);
+              codes.push(c);
+            }
+          });
+
+          codes.forEach(code => {
+            const label = document.createElement("label");
+            label.className = "checkbox-item";
+            label.innerHTML = `<input type="checkbox" value="${code}"> <span>${code}</span>`;
+            label.querySelector("input").addEventListener("change", handleTestcaseSelection);
+            document.getElementById('testcase-items').appendChild(label);
+          });
+
+          if (preselectCodes && Array.isArray(preselectCodes) && preselectCodes.length > 0) {
+            applySelectedCodes(preselectCodes);
+            handleTestcaseSelection();
+          }
+        });
+      }
+      return Promise.resolve();
+    }
+
+    clientSelect.addEventListener("change", () => {
+      writeRunProcessState({ client: clientSelect.value, selectedCodes: [] });
+      fetchTestcaseCodes();
+    });
+    moduleSelect.addEventListener("change", () => {
+      writeRunProcessState({ module: moduleSelect.value, selectedCodes: [] });
+      fetchTestcaseCodes();
+    });
+    environmentSelect.addEventListener("change", () => {
+      writeRunProcessState({ environment: environmentSelect.value, selectedCodes: [] });
+      fetchTestcaseCodes();
+    });
+
+    let scenarioRenderSeq = 0;
+
+    function handleTestcaseSelection() {
+      // Get all checked values
+      const testcaseItems = document.getElementById('testcase-items');
+      if (!testcaseItems) return;
+      const checkedBoxes = Array.from(testcaseItems.querySelectorAll('input[type="checkbox"]:checked'));
+      const selectedCodes = checkedBoxes.map(cb => cb.value);
+
+      writeRunProcessState({
+        client: clientSelect.value,
+        environment: environmentSelect.value,
+        module: moduleSelect.value,
+        selectedCodes
+      });
+
+      // Update Dropdown Text
+      if (selectedCodes.length === 0) {
+        testcaseText.textContent = "Select Codes...";
+      } else if (selectedCodes.length === 1) {
+        testcaseText.textContent = selectedCodes[0];
+      } else {
+        testcaseText.textContent = `${selectedCodes.length} Codes Selected`;
+      }
+
+      // Don't fetch scenarios immediately - wait for user to click "Initiate Run"
+      // Just hide the table if no codes are selected
+      if (selectedCodes.length === 0) {
+        tableBody.innerHTML = "";
+        tableContainer.style.display = "none";
+      }
+    }
+
+    function fetchAndDisplayScenarios(selectedCodes) {
+      const renderSeq = ++scenarioRenderSeq;
+
+      // Hide pagination for this API
+      paginationContainer.style.display = "none";
+      prevPageBtn.disabled = true;
+      nextPageBtn.disabled = true;
+      
+      // Clear table
+      tableBody.innerHTML = "";
+      if (selectedCodes.length === 0) {
+        tableContainer.style.display = "none";
+        return Promise.resolve();
+      }
+
+      console.log(`Fetching scenarios for ${selectedCodes.length} code(s):`, selectedCodes);
+
+      // Single API call with all codes together
+      const codesJson = JSON.stringify(selectedCodes);
+      return authFetch(`/automationserv/return_test_scn_name?Testcasecode=${encodeURIComponent(codesJson)}`, {
+        cache: "no-store"
+      })
+      .then(res => res.json())
+      .then(data => {
+        console.log('API Response:', data);
+
+        if (renderSeq !== scenarioRenderSeq) return;
+
+        let allScenarios = [];
+        if (data.data && Array.isArray(data.data)) {
+          allScenarios = data.data;
+        } else if (data.error) {
+          console.error('API Error:', data.error);
+          tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color: red;">Error: ${data.error}</td></tr>`;
+          tableContainer.style.display = "block";
+          return;
+        }
+
+        // Deduplicate by id only
+        const seen = new Set();
+        const deduped = [];
+        allScenarios.forEach(item => {
+          const key = item && item.id != null ? `id:${item.id}` : `${item?.Testcase_code || ""}|${Math.random()}`;
+          if (seen.has(key)) return;
+          seen.add(key);
+          deduped.push(item);
+        });
+        allScenarios = deduped;
+
+        // Sort by user's selection order, then by id within each code
+        allScenarios.sort((a, b) => {
+          const idxA = selectedCodes.indexOf(a.Testcase_code || '');
+          const idxB = selectedCodes.indexOf(b.Testcase_code || '');
+          if (idxA !== idxB) return idxA - idxB;
+          return (a.id || 0) - (b.id || 0);
+        });
+
+        if (allScenarios.length === 0) {
+          tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px;">No scenarios found for selected codes</td></tr>`;
+          tableContainer.style.display = "block";
+          return;
+        }
+
+        // Guard again before DOM writes
+        if (renderSeq !== scenarioRenderSeq) return;
+
+        allScenarios.forEach(item => {
+          const code = item && item.Testcase_code ? String(item.Testcase_code) : "";
+          
+          // Display step names from Test_scnarios field
+          let stepsDisplay = item.Test_scnarios || "N/A";
+          if (Array.isArray(stepsDisplay)) {
+            stepsDisplay = stepsDisplay.join(", ");
+          }
+
+          console.log('Initial item data:', item);
+          
+          // Format implementation status for display
+          let implStatusDisplay = item.test_implement_status || "Yet to start";
+          console.log('Initial implStatusDisplay:', implStatusDisplay);
+          
+          if (typeof implStatusDisplay === 'string' && (implStatusDisplay.startsWith('{') || implStatusDisplay.startsWith("'{") || implStatusDisplay.includes(':'))) {
+            try {
+              console.log('Initial raw status:', implStatusDisplay);
+              
+              // Clean up the string
+              let cleanedStatus = implStatusDisplay;
+              if (cleanedStatus.startsWith("'") && cleanedStatus.endsWith("'")) {
+                cleanedStatus = cleanedStatus.slice(1, -1);
+              }
+              cleanedStatus = cleanedStatus.replace(/'/g, '"');
+              
+              const parsed = JSON.parse(cleanedStatus);
+              console.log('Parsed initial status:', parsed);
+              
+              // Display as formatted list of scenario: status with checkmarks
+              const statusList = Object.entries(parsed)
+                .map(([key, val]) => {
+                  let valStr = String(val);
+                  console.log(`Initial status for ${key}:`, val, 'original string:', valStr);
+                  
+                  // Decode Unicode escape sequences like \u2713 (✓) and \u2717 (✗)
+                  valStr = valStr.replace(/\\u[\dA-Fa-f]{4}/g, (match) => {
+                    return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
+                  });
+                  
+                  console.log(`After unicode decode for ${key}:`, valStr);
+                  
+                  let checkmark;
+                  const valLower = valStr.toLowerCase().trim();
+                  
+                  // Check if the value already contains checkmark symbols
+                  if (valStr.includes('✓') || valStr.includes('\u2713')) {
+                    checkmark = '✓';
+                  }
+                  else if (valStr.includes('✗') || valStr.includes('\u2717') || valStr.includes('×')) {
+                    checkmark = '✗';
+                  }
+                  // Check for success/pass/completed (including single letter 's')
+                  else if (valLower === 'success' || valLower === 'pass' || valLower === 'completed' || 
+                      valLower === 'done' || valLower === 'ok' || valLower === 'passed' || valLower === 's') {
+                    checkmark = '✓';
+                  } 
+                  // Check for fail/error (including single letter 'f')
+                  else if (valLower === 'fail' || valLower === 'failed' || valLower === 'error' || 
+                           valLower === 'failure' || valLower === 'f') {
+                    checkmark = '✗';
+                  } 
+                  // Check for running/processing (including single letter 'r')
+                  else if (valLower === 'running' || valLower === 'processing' || valLower === 'started' || 
+                           valLower === 'in progress' || valLower === 'r') {
+                    checkmark = '⟳';
+                  }
+                  // Check for yet to start (including single letter 'p' for pending)
+                  else if (valLower === 'yet to start' || valLower === 'pending' || valLower === 'waiting' ||
+                           valLower === 'not started' || valLower === 'p') {
+                    checkmark = '○';
+                  }
+                  // If it's empty or just whitespace
+                  else if (valLower === '' || valLower === 'none' || valLower === 'null') {
+                    checkmark = '○';
+                  }
+                  // Default
+                  else {
+                    console.warn(`Unknown initial status value for ${key}:`, val);
+                    checkmark = '○';
+                  }
+                  
+                  return `${key.replace(/_/g, ' ')}: ${checkmark}`;
+                })
+                .join(' | ');
+              implStatusDisplay = statusList || implStatusDisplay;
+            } catch (e) {
+              console.log('Error parsing initial status:', e);
+              implStatusDisplay = "In Progress";
+            }
+          }
+
+          // Determine initial activity icon based on status
+          let activityIcon = '';
+          const processStatus = item.status || "Yet to start";
+          const lowerStatus = processStatus.toLowerCase();
+          
+          if (lowerStatus === "success" || lowerStatus === "completed" || lowerStatus === "pass") {
+            activityIcon = '<span style="color: #10b981; font-size: 18px;">✅</span>';
+          } else if (["failed", "failure", "fail", "error", "terminated"].includes(lowerStatus)) {
+            activityIcon = '<span style="color: #ef4444; font-size: 18px;">❌</span>';
+          } else if (["started", "running", "processing", "in progress"].includes(lowerStatus)) {
+            activityIcon = '<div class="spinner"></div>';
+          }
+
+          const row = document.createElement("tr");
+          row.setAttribute("data-id", item.id);
+          
+          // Get batch code from item
+          const batchCode = item.batch_code || '—';
+          
+          row.innerHTML = `
+            <td style="font-family:monospace; font-weight:600;">${item.Testcase_code}</td>
+            <td>${stepsDisplay}</td>
+            <td>${implStatusDisplay}</td>
+            <td>${processStatus}</td>
+            <td style="font-family:monospace; color:var(--text-muted);">${batchCode}</td>
+            <td style="text-align:center;">${activityIcon}</td>
+            <td style="text-align:center;">
+              <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <i class="fa-solid fa-eye action-icon view-icon" data-action="view" data-id="${item.id}" title="View Report"></i>
+                <i class="fa-solid fa-download action-icon download-icon" data-action="download" data-id="${item.id}" title="Download Report"></i>
+              </div>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+        tableContainer.style.display = "block";
+      }); // end Promise.all.then
+    }
+
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => {
+        clearRunProcessState();
+        clearPollTimer();
+
+        // Get batch code from URL - most reliable source
+        const urlParams = new URLSearchParams(window.location.search);
+        const batchCodeFromUrl = urlParams.get('batch_code');
+
+        // Also try to get from DOM rows as fallback
+        const rows = Array.from(document.querySelectorAll("#scenario-body tr"));
+        const batchCodes = new Set();
+        if (batchCodeFromUrl) batchCodes.add(batchCodeFromUrl);
+        rows.forEach(row => {
+          if (row.cells && row.cells[4]) {
+            const bc = row.cells[4].textContent.trim();
+            if (bc && bc !== '—') batchCodes.add(bc);
+          }
+        });
+
+        // Store BEFORE reload - synchronously
+        sessionStorage.setItem('resetBatchCodes', JSON.stringify([...batchCodes]));
+
+        // If no batch_code in URL (came from Run Process button directly),
+        // store current selections so we can restore them after reload
+        if (!batchCodeFromUrl) {
+          sessionStorage.setItem('resetRunState', JSON.stringify({
+            client: clientSelect.value,
+            environment: environmentSelect.value,
+            module: moduleSelect.value,
+            codes: Array.from(document.querySelectorAll('#testcase-items input[type="checkbox"]:checked')).map(cb => cb.value)
+          }));
+        }
+
+        // Reset DOM immediately
+        rows.forEach(row => {
+          if (row.cells && row.cells.length >= 6) {
+            row.cells[2].textContent = "Yet to start";
+            row.cells[3].textContent = "Yet to start";
+            row.cells[5].innerHTML = "";
+          }
+        });
+
+        setRunningUi(false);
+
+        // Small delay to ensure sessionStorage is written before reload
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      });
+    }
+
+    let pollInFlight = false;
+    let autoPollIntervalId = null;
+
+    function setRunningUi(isRunning) {
+      if (isRunning) {
+        runButton.disabled = true;
+        runButton.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Running...';
+        runButton.style.opacity = 0.6;
+        // show spinner in activity cells (now cell 5)
+        Array.from(document.querySelectorAll("#scenario-body tr")).forEach(row => {
+          if (row && row.cells && row.cells[5]) row.cells[5].innerHTML = '<div class="spinner"></div>';
+        });
+      } else {
+        runButton.disabled = false;
+        runButton.innerHTML = '<i class="fa-solid fa-play"></i> Initiate Run';
+        runButton.style.opacity = 1;
+      }
+    }
+
+    function clearPollTimer() {}
+
+    function startAutoPolling() {
+      if (autoPollIntervalId) return;
+      autoPollIntervalId = setInterval(() => {
+        const state = readRunProcessState();
+        if (!state || !state.running) {
+          stopAutoPolling();
+          return;
+        }
+        if (!pollInFlight) {
+          pollRefreshUntilDone();
+        }
+      }, 4000);
+    }
+
+    function stopAutoPolling() {
+      if (autoPollIntervalId) {
+        clearInterval(autoPollIntervalId);
+        autoPollIntervalId = null;
+      }
+    }
+
+    runButton.addEventListener("click", () => {
+      const client = clientSelect.value;
+
+      // Get selected codes from checkboxes OR from current testcode if viewing historical data
+      let selectedCodes = [];
+
+      const testcaseItems = document.getElementById('testcase-items');
+      if (testcaseItems) {
+        const checkedBoxes = Array.from(testcaseItems.querySelectorAll('input[type="checkbox"]:checked'));
+        selectedCodes = checkedBoxes.map(cb => cb.value);
+      }
+
+      // If no codes selected from checkboxes but we're viewing historical data, use currentTestCode
+      if (selectedCodes.length === 0 && fromTestCaseSummaryAPI && currentTestCode) {
+        selectedCodes = [currentTestCode];
+        console.log('Using currentTestCode from URL parameter:', currentTestCode);
+      }
+
+      if (selectedCodes.length === 0 || !client) {
+        Swal.fire({ icon: 'warning', title: 'Selection Missing', text: 'Please select at least one Testcase & Client' });
+        return;
+      }
+
+      // If all visible rows are already completed, block the run
+      const visibleRows = Array.from(document.querySelectorAll("#scenario-body tr"));
+      if (visibleRows.length > 0) {
+        const allDone = visibleRows.every(row => {
+          const status = (row.cells[3]?.textContent?.trim() || "").toLowerCase();
+          const activity = row.cells[5]?.innerHTML || "";
+          return status === "success" || status === "completed" || status === "failed" ||
+                 status === "failure" || status === "fail" ||
+                 activity.includes('✅') || activity.includes('❌');
+        });
+        if (allDone) {
+          Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'Run already completed', text: 'All scenarios have finished. Use Reset to run again.', showConfirmButton: false, timer: 4000 });
+          return;
+        }
+      }
+
+      // Reset flags for new run
+      triggerInProgress = false;
+      triggeredRows.clear();
+      completedRows.clear();
+      pollAttempts = 0;
+      fromTestCaseSummaryAPI = false;
+
+      // Clear any reset flags so they don't interfere with the new run
+      sessionStorage.removeItem('resetBatchCodes');
+      sessionStorage.removeItem('resetRunState');
+
+      // If we're viewing from run summary (batch_code in URL), the table already has
+      // the correct Testcase_Result row IDs — skip re-fetching and use them directly.
+      const urlBatchCode = new URLSearchParams(window.location.search).get('batch_code');
+      const existingRows = Array.from(document.querySelectorAll("#scenario-body tr"));
+      const existingRowIds = existingRows.map(r => r.getAttribute("data-id")).filter(Boolean);
+
+      const runWithRowIds = (rowIds) => {
+        const uiRows = Array.from(document.querySelectorAll("#scenario-body tr"));
+        const rowById = new Map(uiRows.map(r => [r.getAttribute("data-id"), r]));
+
+        // From run summary/batch view, table can contain a mix of already completed
+        // and pending rows. Trigger only runnable rows.
+        const runnableRowIds = rowIds.filter(id => {
+          const row = rowById.get(id);
+          if (!row || !row.cells || row.cells.length < 6) return false;
+          const status = (row.cells[3]?.textContent || "").trim().toLowerCase();
+          const activityHtml = row.cells[5]?.innerHTML || "";
+          const isDone =
+            status === "success" ||
+            status === "completed" ||
+            status === "failed" ||
+            status === "fail" ||
+            activityHtml.includes("✅") ||
+            activityHtml.includes("❌");
+          return !isDone;
+        });
+
+        if (runnableRowIds.length === 0) {
+          Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'No pending scenarios to run', showConfirmButton: false, timer: 3000 });
+          return;
+        }
+
+        if (rowIds.length === 0) {
+          Swal.fire({ icon: 'error', title: 'Error', text: 'No scenarios found to run' });
+          return;
+        }
+
+        setRunningUi(true);
+        startAutoPolling();
+        const runnableCodes = [...new Set(
+          runnableRowIds.map(id => {
+            const row = rowById.get(id);
+            return row?.cells?.[0]?.textContent?.trim() || "";
+          }).filter(Boolean)
+        )];
+        writeRunProcessState({
+          client: clientSelect.value,
+          environment: environmentSelect.value,
+          module: moduleSelect.value,
+          selectedCodes: runnableCodes.length ? runnableCodes : selectedCodes,
+          running: true,
+          runningRowIds: runnableRowIds
+        });
+
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Automation Started', showConfirmButton: false, timer: 2000 });
+
+        console.log('Selected Codes:', runnableCodes.length ? runnableCodes : selectedCodes);
+        console.log('Runnable Row IDs:', runnableRowIds);
+
+        const params = new URLSearchParams();
+        params.append('clientname', client);
+        params.append('Testcasecode', JSON.stringify(runnableCodes.length ? runnableCodes : selectedCodes));
+        params.append('testcase_id', JSON.stringify(runnableRowIds));
+
+        authFetch(`/automationserv/automation_runprocess?${params.toString()}`, {
+          method: 'POST',
+          headers: { 'X-CSRFToken': getCookie('csrftoken') },
+          cache: "no-store"
+        })
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+          return res.text().then(text => {
+            try { return JSON.parse(text); } catch (e) { return { success: true }; }
+          });
+        })
+        .then(() => {
+          console.log('✅ All test cases queued successfully');
+          // Track ALL queued rows so completion check waits for all of them
+          runnableRowIds.forEach(id => triggeredRows.add(id));
+          // Kick off polling immediately; interval watchdog keeps it running.
+          console.log('🔄 Starting first poll...');
+          pollRefreshUntilDone();
+        })
+        .catch(err => {
+          console.error("Run error:", err);
+          stopAutoPolling();
+          setRunningUi(false);
+          Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to start automation' });
+        });
+      };
+
+      if (urlBatchCode && existingRowIds.length > 0) {
+        // Use existing table rows — they already have the correct Testcase_Result IDs
+        console.log('Using existing row IDs from batch view:', existingRowIds);
+        runWithRowIds(existingRowIds);
+        return;
+      }
+
+      // Normal flow: fetch fresh scenarios then run
+      fetchAndDisplayScenarios(selectedCodes).then(() => {
+        const rows = Array.from(document.querySelectorAll("#scenario-body tr"));
+        const rowIds = rows.map(row => row.getAttribute("data-id")).filter(id => id);
+        runWithRowIds(rowIds);
+      }).catch(err => {
+        console.error("Error fetching scenarios:", err);
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to load scenarios' });
+      });
+    });
+
+    let pollAttempts = 0;
+    const MAX_POLL_ATTEMPTS = 120;
+    let triggeredRows = new Set();
+    let completedRows = new Set();
+    let triggerInProgress = false; // prevent double-trigger only
+
+    // Trigger the next scenario row
+    function triggerNextStep(nextRowId) {
+      if (triggerInProgress) {
+        // Still mark as triggered so completion check waits for it
+        triggeredRows.add(nextRowId);
+        return;
+      }
+      triggerInProgress = true;
+      triggeredRows.add(nextRowId);
+
+      const allRows = Array.from(document.querySelectorAll("#scenario-body tr"));
+      let testcode = "";
+      for (let row of allRows) {
+        if (row.getAttribute("data-id") === nextRowId) {
+          testcode = row.cells[0]?.textContent?.trim() || "";
+          break;
+        }
+      }
+      if (!testcode) { triggerInProgress = false; return; }
+
+      const params = new URLSearchParams();
+      params.append('clientname', clientSelect.value);
+      params.append('Testcasecode', JSON.stringify([testcode]));
+      params.append('testcase_id', JSON.stringify([nextRowId]));
+
+      Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'Starting Next Step...', showConfirmButton: false, timer: 3000 });
+
+      authFetch(`/automationserv/automation_runprocess?${params.toString()}`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCookie('csrftoken') },
+        cache: "no-store"
+      })
+      .then(res => res.text())
+      .then(() => {
+        triggerInProgress = false;
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Next Step Started!', showConfirmButton: false, timer: 2000 });
+      })
+      .catch(() => { triggerInProgress = false; });
+    }
+
+    function pollRefreshUntilDone() {
+      // Skip if already polling
+      if (pollInFlight) return;
+      pollInFlight = true;
+      let runCompleted = false;
+
+      const rows = Array.from(document.querySelectorAll("#scenario-body tr"));
+      console.log(`🔄 Found ${rows.length} rows to poll`);
+
+      if (!rows.length) {
+        console.log('❌ No rows found, resetting run button');
+        resetRunButton();
+        pollInFlight = false;
+        return;
+      }
+
+      // Poll rows sequentially to avoid browser connection limit exhaustion
+      // (automation_runprocess holds a long-lived connection, leaving few slots)
+      const pollRowsSequentially = async () => {
+        const fetchWithTimeout = async (id) => {
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), 2000);
+          try {
+            const res = await authFetch(`/automationserv/run_process_summary/${id}`, {
+              method: 'POST', cache: "no-store", signal: controller.signal
+            });
+            clearTimeout(timer);
+            if (!res.ok) return null;
+            return await res.json();
+          } catch(e) {
+            clearTimeout(timer);
+            return null; // timeout or error — skip this row
+          }
+        };
+
+        for (const row of rows) {
+          const id = row.getAttribute("data-id");
+          if (!id) continue;
+          const summary = await fetchWithTimeout(id);
+          if (!summary) continue;
+
+            let implStatus = summary.test_implement_status || summary.Teststatus || summary.teststatus || "Yet to start";
+            if (typeof implStatus === 'string' && (implStatus.startsWith('{') || implStatus.startsWith("'{") || implStatus.includes(':'))) {
+              try {
+                let cleaned = implStatus;
+                if (cleaned.startsWith("'") && cleaned.endsWith("'")) cleaned = cleaned.slice(1, -1);
+                cleaned = cleaned.replace(/'/g, '"');
+                const parsed = JSON.parse(cleaned);
+                implStatus = Object.entries(parsed).map(([key, val]) => {
+                  let v = String(val).replace(/\\u[\dA-Fa-f]{4}/g, m => String.fromCharCode(parseInt(m.replace(/\\u/g,''),16)));
+                  const vl = v.toLowerCase().trim();
+                  let mark = v.includes('✓')||v.includes('\u2713') ? '✓'
+                    : v.includes('✗')||v.includes('\u2717') ? '✗'
+                    : ['success','pass','completed','done','ok','passed','s'].includes(vl) ? '✓'
+                    : ['fail','failed','error','failure','f'].includes(vl) ? '✗'
+                    : ['running','processing','started','in progress','r'].includes(vl) ? '⟳' : '○';
+                  return `${key.replace(/_/g,' ')}: ${mark}`;
+                }).join(' | ') || implStatus;
+              } catch(e) { implStatus = "In Progress"; }
+            }
+            row.cells[2].textContent = implStatus;
+
+            let ps = summary.status || "Yet to start";
+            const psl = ps.toLowerCase();
+            if (psl.includes('success')||psl.includes('pass')||psl.includes('completed')) ps = "Success";
+            else if (psl.includes('fail')||psl.includes('error')) ps = "Failed";
+            else if (psl.includes('running')||psl.includes('processing')||psl.includes('started')) ps = "Running";
+            else if (psl.includes('yet to start')) ps = "Yet to start";
+            row.cells[3].textContent = ps;
+
+            const bc = summary.batch_code || row.cells[4].textContent || '—';
+            if (bc !== '—') { row.cells[4].textContent = bc; row.cells[4].style.fontFamily="monospace"; row.cells[4].style.color="var(--text-muted)"; }
+
+            const psl2 = ps.toLowerCase();
+            if (psl2==="success"||psl2==="completed"||psl2==="pass") row.cells[5].innerHTML='<span style="color:#10b981;font-size:18px;">✅</span>';
+            else if (["failed","failure","fail","error","terminated"].includes(psl2)) row.cells[5].innerHTML='<span style="color:#ef4444;font-size:18px;">❌</span>';
+            else if (["started","running","processing","in progress"].includes(psl2)) row.cells[5].innerHTML='<div class="spinner"></div>';
+            else row.cells[5].innerHTML='';
+        }
+      };
+
+      pollRowsSequentially().then(() => {
+
+        // Auto-trigger next step if needed
+        const allRows = Array.from(document.querySelectorAll("#scenario-body tr"));
+        for (let i = 0; i < allRows.length - 1; i++) {
+          const curStatus = allRows[i].cells[3]?.textContent?.trim().toLowerCase() || "";
+          const nxtStatus = allRows[i+1].cells[3]?.textContent?.trim().toLowerCase() || "";
+          const nxtId = allRows[i+1].getAttribute("data-id");
+          const curDone = curStatus === "success" || curStatus === "failed" || curStatus === "fail" ||
+                          allRows[i].cells[5]?.innerHTML?.includes('✅') || allRows[i].cells[5]?.innerHTML?.includes('❌');
+          const nxtPending = nxtStatus === "yet to start" || nxtStatus === "" || nxtStatus === "pending";
+          if (curDone && nxtPending && !triggeredRows.has(nxtId) && !triggerInProgress) {
+            triggerNextStep(nxtId);
+            break;
+          }
+        }
+
+        // Stop only when every triggered row is success or failed
+        const allDone = triggeredRows.size > 0 && !triggerInProgress && [...triggeredRows].every(id => {
+          const r = document.querySelector(`#scenario-body tr[data-id="${id}"]`);
+          if (!r) return true;
+          const st = r.cells[3]?.textContent?.trim().toLowerCase() || "";
+          return st === "success" || st === "failed" || st === "fail" || st === "completed";
+        });
+
+        if (allDone || pollAttempts >= MAX_POLL_ATTEMPTS) {
+          pollAttempts = 0;
+          runCompleted = true;
+          setTimeout(() => resetRunButton(), 500);
+        } else {
+          pollAttempts += 1;
+        }
+
+      }).catch((err) => {
+        console.error("Polling cycle failed, retrying:", err);
+      }).finally(() => {
+        pollInFlight = false;
+      });
+    }
+
+    refreshIcon.addEventListener("click", () => {
+      if (fromTestCaseSummaryAPI && currentTestCode) {
+        if (pollInFlight) return;
+        pollInFlight = true;
+        loadFromTestCaseSummary(currentTestCode);
+        setTimeout(() => { pollInFlight = false; }, 1000);
+      } else {
+        if (pollInFlight) return;
+        pollRefreshUntilDone();
+      }
+    });
+
+    function areAllRowsCompleted() {
+      const rows = Array.from(document.querySelectorAll("#scenario-body tr"));
+
+      if (rows.length === 0) {
+        console.log('No rows found');
+        return true;
+      }
+
+      let allCompleted = true;
+      let anyNewlyCompleted = false;
+
+      rows.forEach(row => {
+        if (!row.cells || row.cells.length < 6) {
+          console.log('Row has insufficient cells');
+          return;
+        }
+
+        const rowId = row.getAttribute("data-id");
+        const statusCell = row.cells[3]?.textContent?.trim().toLowerCase() || "";
+        const activityCell = row.cells[5]?.textContent?.trim() || "";
+        const implStatusCell = row.cells[2]?.textContent?.trim() || "";
+
+        // A row is completed if it has success/failed status OR success/failed activity icon
+        const isCompleted = (
+          statusCell === "success" ||
+          statusCell === "completed" ||
+          statusCell === "failed" ||
+          statusCell === "failure" ||
+          statusCell === "fail" ||
+          activityCell === "✅" ||
+          activityCell === "❌" ||
+          activityCell.includes('✅') ||
+          activityCell.includes('❌')
+        );
+
+        // Check if row is still running
+        const isRunning = (
+          statusCell === "running" ||
+          statusCell === "processing" ||
+          statusCell === "started" ||
+          statusCell === "in progress" ||
+          implStatusCell.includes('⟳')
+        );
+
+        const isYetToStart = (
+          statusCell === "yet to start" ||
+          statusCell === "pending" ||
+          statusCell === ""
+        );
+
+        console.log(`Row check - ID: ${rowId}, Status: "${statusCell}", Activity: "${activityCell}", Completed: ${isCompleted}, Running: ${isRunning}, YetToStart: ${isYetToStart}`);
+
+        // Track newly completed rows
+        if (isCompleted && !completedRows.has(rowId)) {
+          console.log(`Row ${rowId} just completed!`);
+          completedRows.add(rowId);
+          anyNewlyCompleted = true;
+        }
+
+        // Row is considered "done" only if it's completed (success or failed)
+        if (!isCompleted) {
+          if (!isYetToStart || triggeredRows.has(rowId)) {
+            allCompleted = false;
+          }
+        }
+      });
+
+      console.log(`All rows completed: ${allCompleted}, Any newly completed: ${anyNewlyCompleted}`);
+      return allCompleted;
+    }
+
+    function resetRunButton() {
+      clearPollTimer();
+      stopAutoPolling();
+      writeRunProcessState({ running: false, runningRowIds: [] });
+      setRunningUi(false);
+    }
+
+    // Flags to track if we're viewing historical data from test_case_summary API
+    let fromTestCaseSummaryAPI = false;
+    let currentTestCode = null;
+
+    function restoreRunProcessState() {
+      const state = readRunProcessState();
+      if (!state) return;
+
+      if (state.client) clientSelect.value = state.client;
+      if (state.environment) environmentSelect.value = state.environment;
+      if (state.module) moduleSelect.value = state.module;
+
+      if (state.client && state.environment && state.module) {
+        fetchTestcaseCodes(state.selectedCodes).then(() => {
+          // If a run was in progress, resume polling and keep the running UI
+          if (state.running) {
+            setRunningUi(true);
+            startAutoPolling();
+            pollRefreshUntilDone();
+          }
+        });
+      }
+    }
+
+    let currentPage = 1;
+    let currentBatchCode = null;
+
+    const paginationContainer = document.getElementById("pagination-container");
+    const prevPageBtn = document.getElementById("prev-page-btn");
+    const nextPageBtn = document.getElementById("next-page-btn");
+    const currentPageText = document.getElementById("current-page");
+
+    // Load data from batch code when redirected from run summary
+    function loadFromBatchCode(batchCode,page = 1) {
+      if (!batchCode) return;
+
+      currentBatchCode = batchCode;
+      currentPage = page;
+
+      fromTestCaseSummaryAPI = true;
+
+      // Fetch data using batch_code from test_case_summary API
+      authFetch(`/automationserv/test_case_summary?batch_code=${encodeURIComponent(batchCode)}&page=${page}`, {
+        cache: "no-store"
+      })
+      .then(res => {
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        console.log('test_case_summary response:', data);
+
+        // Check for data.data instead of data.records
+        if (!data.data || !Array.isArray(data.data) || data.data.length === 0) {
+          Swal.fire({ icon: 'info', title: 'No Data', text: 'No execution history found for this batch code.' });
+
+          tableContainer.style.display = "block";
+          paginationContainer.style.display = "none";
+          return;
+        }
+
+        // Get first record to extract client, environment, module
+        const firstRecord = data.data[0];
+
+        // Extract values from API
+        // Note: Aut_Response.set_project_module stores key as " project_module" (leading space)
+        let client = (firstRecord.client_name || '').trim();
+        let environment = (firstRecord.environment || '').trim();
+        let module = (firstRecord[' project_module'] || firstRecord.project_module || firstRecord.Module || '').trim();
+        let testcode = firstRecord.testcase_code || firstRecord.Testcase_code;
+
+        // Helper: ensure a value exists as an option in a select, add it if missing
+        function ensureOption(selectEl, val) {
+          if (!val) return;
+          const exists = Array.from(selectEl.options).some(o => o.value === val);
+          if (!exists) {
+            const opt = document.createElement('option');
+            opt.value = val;
+            opt.textContent = val;
+            selectEl.appendChild(opt);
+          }
+        }
+
+        // Set dropdown values — add option dynamically if not present
+        if (client) { ensureOption(clientSelect, client); clientSelect.value = client; }
+        if (environment) { ensureOption(environmentSelect, environment); environmentSelect.value = environment; }
+        if (module) { ensureOption(moduleSelect, module); moduleSelect.value = module; }
+
+        // Use the actual testcase code from the API response, fallback to batch code
+        const codeToUse = testcode || batchCode;
+
+        // Get ALL unique testcase codes from the response
+        const allCodes = [...new Set(data.data.map(item => item.testcase_code).filter(Boolean))];
+        const displayCodes = allCodes.length > 0 ? allCodes : [codeToUse];
+
+        // Update testcase dropdown to show all codes
+        testcaseText.textContent = displayCodes.length === 1 ? displayCodes[0] : `${displayCodes.length} Codes Selected`;
+
+        // Populate the testcase dropdown with all codes
+        const testcaseItems = document.getElementById('testcase-items');
+        testcaseItems.innerHTML = '';
+        displayCodes.forEach(code => {
+          const label = document.createElement("label");
+          label.className = "checkbox-item";
+          label.innerHTML = `<input type="checkbox" value="${code}" checked> <span>${code}</span>`;
+          label.querySelector("input").addEventListener("change", handleTestcaseSelection);
+          testcaseItems.appendChild(label);
+        });
+
+        // Update the state to include this testcase code as selected
+        writeRunProcessState({
+          client: client || "",
+          environment: environment || "",
+          module: module || "",
+          selectedCodes: displayCodes
+        });
+
+        // Display ALL records from API response in the table
+        tableBody.innerHTML = "";
+
+        data.data.forEach(item => {
+          // Get step names from Testcase_scenario_name field
+          let stepsDisplay = item.Testcase_scenario_name || item.scenario_name || "N/A";
+          if (Array.isArray(stepsDisplay)) {
+            stepsDisplay = stepsDisplay.join(", ");
+          }
+
+          // Format implementation status
+          let implStatusDisplay = item.run_status || item.test_implement_status || "Yet to start";
+          if (typeof implStatusDisplay === 'string' && (implStatusDisplay.startsWith('{') || implStatusDisplay.includes(':'))) {
+            try {
+              const parsed = JSON.parse(implStatusDisplay.replace(/'/g, '"'));
+              const statusList = Object.entries(parsed)
+                .map(([key, val]) => {
+                  const valStr = String(val);
+                  const valLower = valStr.toLowerCase();
+                  let checkmark;
+                  if (valStr.includes('✓') || valStr.includes('\u2713')) {
+                    checkmark = '✓';
+                  } else if (valStr.includes('✗') || valStr.includes('\u2717') || valStr.includes('×')) {
+                    checkmark = '✗';
+                  } else if (valLower.includes('success') || valLower.includes('pass')) {
+                    checkmark = '✓';
+                  } else if (valLower.includes('fail') || valLower.includes('error')) {
+                    checkmark = '✗';
+                  } else {
+                    checkmark = valStr.trim() || '✗';
+                  }
+                  return `${key}: ${checkmark}`;
+                })
+                .join(', ');
+              implStatusDisplay = statusList || implStatusDisplay;
+            } catch (e) {
+              // Keep original if parsing fails
+            }
+          }
+
+          // Process status - override with "Yet to start" if this batch was reset
+          const resetBatchCodes = JSON.parse(sessionStorage.getItem('resetBatchCodes') || '[]');
+          const urlParams = new URLSearchParams(window.location.search);
+          const urlBatchCode = urlParams.get('batch_code') || '';
+          const wasReset = resetBatchCodes.length > 0 && (
+            resetBatchCodes.includes(batchCode) ||
+            resetBatchCodes.includes(urlBatchCode)
+          );
+          let processStatus = wasReset ? "Yet to start" : (item.status || "Yet to start");
+          let implStatusDisplayFinal = wasReset ? "Yet to start" : implStatusDisplay;
+
+          // Activity icon based on status
+          let activityIcon = '';
+          const lowerStatus = wasReset ? "yet to start" : processStatus.toLowerCase();
+          if (lowerStatus === "success" || lowerStatus === "completed" || lowerStatus === "pass") {
+            activityIcon = '<span style="color: #10b981; font-size: 18px;">✅</span>';
+          } else if (["failed", "failure", "fail", "error", "terminated"].includes(lowerStatus)) {
+            activityIcon = '<span style="color: #ef4444; font-size: 18px;">❌</span>';
+          } else if (["started", "running", "processing", "in progress"].includes(lowerStatus)) {
+            activityIcon = '<div class="spinner"></div>';
+          }
+
+          const row = document.createElement("tr");
+          row.setAttribute("data-id", item.id);
+          row.innerHTML = `
+            <td style="font-family:monospace; font-weight:600;">${item.testcase_code || testcode || batchCode}</td>
+            <td>${stepsDisplay}</td>
+            <td>${implStatusDisplayFinal}</td>
+            <td>${processStatus}</td>
+            <td style="font-family:monospace; color:var(--text-muted);">${batchCode}</td>
+            <td style="text-align:center;">${activityIcon}</td>
+            <td style="text-align:center;">
+              <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <i class="fa-solid fa-eye action-icon view-icon" data-action="view" data-id="${item.id}" title="View Report"></i>
+                <i class="fa-solid fa-download action-icon download-icon" data-action="download" data-id="${item.id}" title="Download Report"></i>
+              </div>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+
+        tableContainer.style.display = "block";
+        // Clear reset flag after applying it once
+        sessionStorage.removeItem('resetBatchCodes');
+        // ================= PAGINATION =================
+        if (data.pagination) {
+
+          paginationContainer.style.display = "flex";
+
+          currentPageText.textContent = `Page ${data.pagination.index}`;
+
+          prevPageBtn.disabled = !data.pagination.has_previous;
+
+          nextPageBtn.disabled = !data.pagination.has_next;
+        }
+      })
+      .catch(err => {
+        console.error('Error loading batch code data:', err);
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to load batch code data.' });
+      });
+    }
+    prevPageBtn.addEventListener("click", () => {
+
+      if (currentPage > 1) {
+
+        loadFromBatchCode(currentBatchCode, currentPage - 1);
+      }
+    });
+    nextPageBtn.addEventListener("click", () => {
+
+        loadFromBatchCode(currentBatchCode, currentPage + 1);
+    });
+
+    // Load data from test_case_summary API when redirected from run summary
+    function loadFromTestCaseSummary(testcode) {
+      if (!testcode) return;
+      
+      fromTestCaseSummaryAPI = true;
+      currentTestCode = testcode;
+      
+      authFetch(`/automationserv/test_case_summary?Testcasecode=${testcode}`, {
+        cache: "no-store"
+      })
+      .then(res => res.json())
+      .then(data => {
+        console.log('test_case_summary response:', data);
+        
+        if (!data.data || !Array.isArray(data.data) || data.data.length === 0) {
+          Swal.fire({ icon: 'info', title: 'No Data', text: 'No execution history found for this test code.' });
+          return;
+        }
+        
+        // Get first record to extract client, environment, module
+        const firstRecord = data.data[0];
+        
+        // Extract values from API or parse from testcode
+        // Note: Aut_Response.set_project_module stores key as " project_module" (leading space)
+        let client = (firstRecord.client_name || '').trim();
+        let environment = (firstRecord.environment || '').trim();
+        let module = (firstRecord[' project_module'] || firstRecord.project_module || firstRecord.Module || '').trim();
+
+        // If API returns null, try to parse from testcode (e.g., "AUTECFDOKVB003" -> KVB, DO, ECF)
+        if (!client || !environment || !module) {
+          // Pattern: AUT + MODULE + ENV + CLIENT + digits
+          // Example: AUTECFDOKVB003 -> ECF, DO, KVB
+          const match = testcode.match(/^AUT([A-Z]+)([A-Z]+)([A-Z]+)\d+$/);
+          if (match) {
+            if (!module) module = match[1]; // ECF
+            if (!environment) environment = match[2]; // DO
+            if (!client) client = match[3]; // KVB
+          }
+        }
+
+        // Helper: ensure a value exists as an option in a select, add it if missing
+        function ensureOption2(selectEl, val) {
+          if (!val) return;
+          const exists = Array.from(selectEl.options).some(o => o.value === val);
+          if (!exists) {
+            const opt = document.createElement('option');
+            opt.value = val;
+            opt.textContent = val;
+            selectEl.appendChild(opt);
+          }
+        }
+
+        // Set dropdown values — add option dynamically if not present
+        if (client) { ensureOption2(clientSelect, client); clientSelect.value = client; }
+        if (environment) { ensureOption2(environmentSelect, environment); environmentSelect.value = environment; }
+        if (module) { ensureOption2(moduleSelect, module); moduleSelect.value = module; }
+
+        // Fetch and populate testcase codes dropdown with the current testcode preselected
+        if (client && environment && module) {
+          fetchTestcaseCodes([testcode]).then(() => {
+            console.log('Testcase codes fetched and', testcode, 'preselected');
+          }).catch(err => {
+            console.error('Error fetching testcase codes:', err);
+            // Fallback: just update the text
+            testcaseText.textContent = testcode;
+          });
+        } else {
+          // If we can't fetch codes, just update the text
+          testcaseText.textContent = testcode;
+        }
+        
+        // Display ALL records from API response in the table
+        tableBody.innerHTML = "";
+        
+        data.data.forEach(item => {
+          // Get step names from Testcase_scenario_name field
+          let stepsDisplay = item.Testcase_scenario_name || "N/A";
+          if (Array.isArray(stepsDisplay)) {
+            stepsDisplay = stepsDisplay.join(", ");
+          }
+          
+          // Format implementation status
+          let implStatusDisplay = item.run_status || "Yet to start";
+          if (typeof implStatusDisplay === 'string' && (implStatusDisplay.startsWith('{') || implStatusDisplay.includes(':'))) {
+            try {
+              const parsed = JSON.parse(implStatusDisplay.replace(/'/g, '"'));
+              const statusList = Object.entries(parsed)
+                .map(([key, val]) => {
+                  const valStr = String(val);
+                  const valLower = valStr.toLowerCase();
+                  // Check if value already contains checkmark symbols or success/pass/fail keywords
+                  let checkmark;
+                  if (valStr.includes('✓') || valStr.includes('\u2713')) {
+                    checkmark = '✓';
+                  } else if (valStr.includes('✗') || valStr.includes('\u2717') || valStr.includes('×')) {
+                    checkmark = '✗';
+                  } else if (valLower.includes('success') || valLower.includes('pass')) {
+                    checkmark = '✓';
+                  } else if (valLower.includes('fail') || valLower.includes('error')) {
+                    checkmark = '✗';
+                  } else {
+                    // Default to the value as-is if it's already a symbol, otherwise show ✗
+                    checkmark = valStr.trim() || '✗';
+                  }
+                  return `${key}: ${checkmark}`;
+                })
+                .join(', ');
+              implStatusDisplay = statusList || implStatusDisplay;
+            } catch (e) {
+              // Keep original if parsing fails
+            }
+          }
+          
+          // Process status
+          const processStatus = item.status || "Yet to start";
+          
+          // Batch code
+          const batchCode = item.batch_code || '—';
+          
+          // Activity icon based on status
+          let activityIcon = '';
+          const lowerStatus = processStatus.toLowerCase();
+          if (lowerStatus === "success" || lowerStatus === "completed" || lowerStatus === "pass") {
+            activityIcon = '<span style="color: #10b981; font-size: 18px;">✅</span>';
+          } else if (["failed", "failure", "fail", "error", "terminated"].includes(lowerStatus)) {
+            activityIcon = '<span style="color: #ef4444; font-size: 18px;">❌</span>';
+          } else if (["started", "running", "processing", "in progress"].includes(lowerStatus)) {
+            activityIcon = '<div class="spinner"></div>';
+          }
+          
+          const row = document.createElement("tr");
+          row.setAttribute("data-id", item.id);
+          row.innerHTML = `
+            <td style="font-family:monospace; font-weight:600;">${testcode}</td>
+            <td>${stepsDisplay}</td>
+            <td>${implStatusDisplay}</td>
+            <td>${processStatus}</td>
+            <td style="font-family:monospace; color:var(--text-muted);">${batchCode}</td>
+            <td style="text-align:center;">${activityIcon}</td>
+            <td style="text-align:center;">
+              <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <i class="fa-solid fa-eye action-icon view-icon" data-action="view" data-id="${item.id}" title="View Report"></i>
+                <i class="fa-solid fa-download action-icon download-icon" data-action="download" data-id="${item.id}" title="Download Report"></i>
+              </div>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+        
+        tableContainer.style.display = "block";
+      })
+      .catch(err => {
+        console.error('Error loading test_case_summary:', err);
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to load test case data.' });
+      });
+    }
+
+    // Avoid double-restore (DOMContentLoaded + pageshow) which can cause duplicate renders.
+    window.addEventListener("pageshow", (e) => {
+      if (e && e.persisted) restoreRunProcessState();
+    });
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("usernameDisplay").textContent = sessionStorage.getItem("username") || "Guest";
+      
+      // Check if we have a batch_code or testcode URL parameter (redirected from run summary)
+      const urlParams = new URLSearchParams(window.location.search);
+      const batchCodeParam = urlParams.get('batch_code');
+      const testcodeParam = urlParams.get('testcode'); // Keep for backward compatibility
+      
+      if (batchCodeParam) {
+        // Load data from batch code
+        loadFromBatchCode(batchCodeParam,1);
+      } else if (testcodeParam) {
+        // Load data from test_case_summary API (backward compatibility)
+        loadFromTestCaseSummary(testcodeParam);
+      } else {
+        // Check if we have a reset state to restore (came from reset button on run process page)
+        const resetRunStateRaw = sessionStorage.getItem('resetRunState');
+        if (resetRunStateRaw) {
+          try {
+            const resetRunState = JSON.parse(resetRunStateRaw);
+            sessionStorage.removeItem('resetRunState');
+            sessionStorage.removeItem('resetBatchCodes');
+
+            // Restore dropdowns
+            if (resetRunState.client) clientSelect.value = resetRunState.client;
+            if (resetRunState.environment) environmentSelect.value = resetRunState.environment;
+            if (resetRunState.module) moduleSelect.value = resetRunState.module;
+
+            const codesToRestore = resetRunState.codes || [];
+
+            if (codesToRestore.length > 0) {
+              // First populate the dropdown with preselected codes, then fetch scenarios
+              fetchTestcaseCodes(codesToRestore).then(() => {
+                return fetchAndDisplayScenarios(codesToRestore);
+              }).then(() => {
+                // Override all statuses to "Yet to start"
+                const rows = Array.from(document.querySelectorAll("#scenario-body tr"));
+                rows.forEach(row => {
+                  if (row.cells && row.cells.length >= 6) {
+                    row.cells[2].textContent = "Yet to start";
+                    row.cells[3].textContent = "Yet to start";
+                    row.cells[5].innerHTML = "";
+                  }
+                });
+              });
+            }
+          } catch(e) {
+            console.error('Error restoring reset state:', e);
+          }
+          return;
+        }
+
+        // Normal flow: start fresh
+        clientSelect.value = "";
+        environmentSelect.value = "";
+        moduleSelect.value = "";
+        testcaseText.textContent = "Select Codes...";
+        document.getElementById('testcase-items').innerHTML = "";
+        tableBody.innerHTML = "";
+        tableContainer.style.display = "none";
+        console.log('Page loaded fresh - no URL parameters detected');
+      }
+    });
+
+    // Event delegation for action icons
+    document.getElementById('scenario-body').addEventListener('click', (e) => {
+      const target = e.target;
+      
+      // Check if clicked element is an action icon
+      if (target.classList.contains('action-icon')) {
+        e.stopPropagation();
+        e.preventDefault();
+        
+        const action = target.getAttribute('data-action');
+        const recordId = target.getAttribute('data-id');
+        
+        if (!recordId) {
+          Swal.fire({ icon: 'warning', title: 'No Record ID', text: 'No record ID available for this action' });
+          return;
+        }
+        
+        if (action === 'view') {
+          // Call the view report API with the ID parameter
+          console.log('Calling view report API for id:', recordId);
+          
+          authFetch(`/automationserv/view_report?id=${encodeURIComponent(recordId)}`, {
+            method: "GET",
+            cache: "no-store"
+          })
+          .then(res => {
+            if (!res.ok) {
+              throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+          })
+          .then(data => {
+            console.log('View report API response:', data);
+            
+            // Handle the API response
+            if (data.success !== false) {
+              // Store the data in localStorage for the report view page
+              if (data.records && Array.isArray(data.records)) {
+                localStorage.setItem("reportData", JSON.stringify(data.records));
+              } else if (data.data) {
+                localStorage.setItem("reportData", JSON.stringify(data.data));
+              } else {
+                localStorage.setItem("reportData", JSON.stringify(data));
+              }
+              
+              // Redirect to report view form with the ID
+              window.location.href = `/automationserv/view_report-form/?id=${encodeURIComponent(recordId)}`;
+            } else {
+              Swal.fire({ 
+                icon: 'info', 
+                title: 'No Data', 
+                text: data.message || 'No report data found for this record.' 
+              });
+            }
+          })
+          .catch(err => {
+            console.error('Error calling view report API:', err);
+            Swal.fire({ 
+              icon: 'error', 
+              title: 'Error', 
+              text: `Failed to fetch report data: ${err.message}` 
+            });
+          });
+        } else if (action === 'download') {
+          // Download report PDF
+          downloadReportPdf(recordId);
+        }
+      }
+    });
+
+    // Function to download report PDF
+    function downloadReportPdf(recordId) {
+      console.log('Downloading PDF for id:', recordId);
+      
+      authFetch(`/automationserv/trstreport?id=${encodeURIComponent(recordId)}`, {
+        method: "GET",
+        headers: { "X-CSRFToken": getCookie("csrftoken") }
+      })
+      .then(r => {
+        console.log('PDF response received');
+        return r.blob();
+      })
+      .then(blob => {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `Report_${recordId}.pdf`;
+        link.click();
+      })
+      .catch((err) => {
+        console.error('PDF download error:', err);
+        Swal.fire({ icon: 'error', title: 'Download Failed', text: 'Error downloading PDF report' });
+      });
+    }
+
+    document.querySelector(".logout").onclick = () => { sessionStorage.clear(); window.location.href = "/userserv/authtoken-form/"; };
+  </script>
+</body>
+</html>

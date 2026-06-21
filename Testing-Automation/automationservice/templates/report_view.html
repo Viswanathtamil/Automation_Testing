@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoFlow | Detailed Report View</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --bg: #0f172a;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --input-section-bg: #f8fafc;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+
+    .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 20px;
+  transition: 0.2s;
+}
+
+.back-link:hover {
+  opacity: 0.8;
+  transform: translateX(-2px);
+}
+
+    * { box-sizing: border-box; outline: none; }
+    body { margin: 0; font-family: "Plus Jakarta Sans", sans-serif; background-color: #f4f7fe; color: var(--text-main); display: flex; }
+
+    /* SIDEBAR - PROFESSIONAL STYLE */
+    .sidebar { 
+      width: 260px; 
+      height: 100vh; 
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      color: white; 
+      position: fixed; 
+      padding: 30px 20px; 
+      z-index: 100;
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .sidebar .logo { 
+      font-size: 22px; 
+      font-weight: 800; 
+      margin-bottom: 50px; 
+      display: flex; 
+      align-items: center; 
+      gap: 10px; 
+      color: #fff; 
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar .logo:hover {
+      background: rgba(99, 102, 241, 0.15);
+      transform: translateY(-2px);
+    }
+    
+    .sidebar .logo i { 
+      color: var(--primary); 
+      font-size: 24px;
+      filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5));
+    }
+    
+    .nav-item { 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      padding: 14px 18px; 
+      border-radius: 12px; 
+      color: #94a3b8; 
+      text-decoration: none; 
+      margin-bottom: 8px; 
+      font-size: 14px; 
+      font-weight: 600;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .nav-item::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 3px;
+      background: var(--primary);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+    
+    .nav-item:hover:not(.active) { 
+      background: rgba(255, 255, 255, 0.08); 
+      color: white;
+      transform: translateX(4px);
+    }
+    
+    .nav-item.active { 
+      background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    }
+    
+    .nav-item.active::before {
+      transform: scaleY(1);
+    }
+    
+    .nav-item i {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* MAIN CONTENT */
+    .main { margin-left: 260px; width: calc(100% - 260px); padding: 40px; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+
+    /* ACTIONS & CARDS */
+    .btn-back {
+      background: white; border: 1px solid var(--border); padding: 10px 20px; border-radius: 10px;
+      font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; color: var(--text-main);
+      transition: 0.3s; margin-bottom: 25px;
+    }
+    .btn-back:hover { background: #f1f5f9; transform: translateX(-4px); }
+
+    .report-card { background: white; border-radius: 20px; padding: 30px; margin-bottom: 30px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+
+    /* SUMMARY MINI TABLE */
+    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-bottom: 30px; background: #f8fafc; padding: 20px; border-radius: 15px; border: 1px solid var(--border); }
+    .summary-item label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+    .summary-item span { font-size: 14px; font-weight: 600; }
+    
+    /* STATUS STYLING - Match run_summary.html */
+    .status-text { 
+      font-size: 12px !important; 
+      font-weight: 800 !important;
+      text-transform: uppercase;
+    }
+    .status-success { 
+      color: #10b981 !important;
+    }
+    .status-failed {
+      color: #ef4444 !important;
+    }
+    .status-in-progress {
+      color: #f59e0b !important;
+    }
+    .status-yet-to-start {
+      color: #6b7280 !important;
+    }
+
+    /* NESTED INPUT DATA TABLES */
+    .input-data-section { margin-top: 25px; }
+    .section-title { font-size: 14px; font-weight: 700; color: var(--primary); margin: 20px 0 10px 0; display: flex; align-items: center; gap: 8px; }
+    .section-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+    .data-table-wrap { width: 100%; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--border); overflow: hidden; }
+    .data-table { width: 100%; border-collapse: collapse; background: white; table-layout: fixed; }
+    .data-table th { background: #f1f5f9; padding: 8px 10px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; text-align: center; border-bottom: 1px solid var(--border); word-break: break-word; overflow-wrap: break-word; }
+    .data-table td { padding: 8px 10px; font-size: 12px; border-top: 1px solid var(--border); text-align: center; word-break: break-word; overflow-wrap: break-word; }
+
+    /* SCREENSHOTS */
+    .screenshot-container { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 20px; }
+    .screenshot-wrapper { background: #f8fafc; padding: 15px; border-radius: 15px; border: 1px solid var(--border); }
+    .screenshot-wrapper img { width: 100%; border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+
+    .user-badge { background: white; padding: 8px 16px; border-radius: 30px; font-weight: 600; font-size: 14px; border: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  </style>
+</head>
+
+<body>
+  <aside class="sidebar">
+    <a href="#" class="logo"><i class="fa-solid fa-bolt-lightning"></i> AUTOFLOW</a>
+    <nav>
+      <a href="/automationserv/template_summary-form/" class="nav-item"><i class="fa-solid fa-layer-group"></i> Template</a>
+      <a href="/automationserv/run_summary-form/" class="nav-item active"><i class="fa-solid fa-play"></i> Run</a>
+<!--      <a href="/automationserv/report_summary-form/" class="nav-item active"><i class="fa-solid fa-chart-pie"></i> Report</a>-->
+    </nav>
+  </aside>
+
+  <main class="main">
+    <header>
+      <h1>Detailed Report</h1>
+      <div class="user-badge">
+        <i class="fa-regular fa-circle-user"></i>
+        <span id="usernameDisplay">Guest</span>
+        <a href="#" class="logout" style="color:var(--danger); margin-left:10px;"><i class="fa-solid fa-power-off"></i></a>
+      </div>
+    </header>
+
+    <a href="#" id="backBtn" class="back-link">
+      <i class="fa-solid fa-arrow-left"></i> Back to Summary
+    </a>
+
+    <div id="report-container">
+      </div>
+  </main>
+
+  <script>
+    // Auth fetch helper
+    function authFetch(url, options = {}) {
+      const token = sessionStorage.getItem("authToken");
+      if (!token) {
+        window.location.href = "/userserv/authtoken-form/";
+        return Promise.reject("No auth token");
+      }
+      const headers = options.headers || {};
+      headers["Authorization"] = `Token ${token}`;
+      return fetch(url, { ...options, headers });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("usernameDisplay").textContent = sessionStorage.getItem("username") || "Guest";
+
+      const storedData = localStorage.getItem("reportData");
+      const container = document.getElementById("report-container");
+
+      console.log('=== REPORT VIEW PAGE LOADED ===');
+      console.log('Stored data exists:', !!storedData);
+
+      if (!storedData) {
+        container.innerHTML = `<div class="report-card">No report data found for this execution.</div>`;
+        return;
+      }
+
+      // Parse records to get batch_code for back button
+      let batchCode = null;
+      try {
+        const records = JSON.parse(storedData);
+        if (Array.isArray(records) && records.length > 0) {
+          batchCode = records[0].batch_code;
+          console.log('Extracted batch_code:', batchCode);
+        }
+      } catch (e) {
+        console.error('Error parsing report data for batch_code:', e);
+      }
+
+      const backBtn = document.getElementById("backBtn");
+      if (backBtn) {
+        backBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+
+          if (!batchCode) {
+            console.warn('No batch_code found, using history.back()');
+            window.history.back();
+            return;
+          }
+
+          // Navigate to testcase.html with batch_code parameter
+          // This will trigger loadFromBatchCode() which calls test_case_summary API
+          console.log('Navigating to testcase with batch_code:', batchCode);
+          window.location.href = `/automationserv/run_processtemplate-form/?batch_code=${encodeURIComponent(batchCode)}`;
+        });
+      }
+
+      try {
+        const records = JSON.parse(storedData);
+        console.log('Parsed records:', records);
+        console.log('Number of records:', Array.isArray(records) ? records.length : 'Not an array');
+        
+        if (Array.isArray(records) && records.length > 0) {
+          console.log('First record details:');
+          console.log('  Testcase_code:', records[0].Testcase_code);
+          console.log('  testcase_code:', records[0].testcase_code);
+          console.log('  code:', records[0].code);
+          console.log('  client_name:', records[0].client_name);
+          console.log('  Module:', records[0].Module);
+          console.log('  project_module:', records[0].project_module);
+          console.log('  status:', records[0].status);
+          console.log('  Test_scnarios:', records[0].Test_scnarios);
+          console.log('  Testcase_scenario_name:', records[0].Testcase_scenario_name);
+          console.log('  step:', records[0].step);
+          console.log('  step_number:', records[0].step_number);
+          console.log('  Steps:', records[0].Steps);
+          console.log('All fields:', Object.keys(records[0]));
+        }
+
+        // If backend gave us an empty array or non-array, show a friendly message
+        if (!Array.isArray(records) || records.length === 0) {
+          container.innerHTML = `<div class="report-card">No detailed report records are available for this execution.</div>`;
+        } else {
+          displayReportData(records);
+        }
+      } catch (e) {
+        console.error('Error parsing report data:', e);
+        container.innerHTML = `<div class="report-card">Error parsing report data.</div>`;
+      }
+    });
+
+    // Helper: Logic to build nested tables for input data
+    function buildNormalInputTable(inputJsonStr, stepNumber, base64Images, screenshotPaths) {
+
+  try {
+
+    const parsed = JSON.parse(inputJsonStr);
+
+    if (!parsed) {
+      return "<p>No execution data available.</p>";
+    }
+
+    // Build a map of section name → [base64 images] using screenshot paths
+    // Path format: .../SectionName/screenshot_xxx.png  (section is second-to-last segment)
+    const imagesBySection = {};
+    if (screenshotPaths && base64Images) {
+      let paths = screenshotPaths;
+      if (typeof paths === "string") {
+        try { paths = JSON.parse(paths); } catch(e) { paths = []; }
+      }
+      paths.forEach((path, idx) => {
+        const parts = path.replace(/\\/g, "/").split("/");
+        const sectionName = parts[parts.length - 2];
+        if (!imagesBySection[sectionName]) imagesBySection[sectionName] = [];
+        if (base64Images[idx]) imagesBySection[sectionName].push(base64Images[idx]);
+      });
+    }
+
+    let html = "";
+    let subStep = 1;
+
+    for (const section in parsed) {
+
+      // Skip scenario key
+      if (section === "Testcase_scnarios") {
+        continue;
+      }
+
+      const sectionValue = parsed[section];
+
+      html += `
+        <div class="section-title">
+          Step ${stepNumber}.${subStep}: ${section}
+        </div>
+      `;
+
+      html += `<div class="data-table-wrap"><table class="data-table"><thead><tr>`;
+
+      // Header
+      for (const key in sectionValue) {
+        const field = sectionValue[key];
+        if (key === "images") continue;
+        if (field && typeof field === "object") {
+          html += `<th>${key || key}</th>`;
+        } else {
+          html += `<th>${key}</th>`;
+        }
+      }
+
+      html += `</tr></thead><tbody><tr>`;
+
+      // Values
+      for (const key in sectionValue) {
+        const field = sectionValue[key];
+        if (key === "images") continue;
+        let value = "-";
+        if (field && typeof field === "object") {
+          value = field.field_value ?? "-";
+        } else {
+          value = field ?? "-";
+        }
+        html += `<td>${value}</td>`;
+      }
+
+      html += `</tr></tbody></table></div>`;
+
+      // Screenshots for this section immediately after its table
+      const sectionImages = imagesBySection[section] || [];
+      if (sectionImages.length > 0) {
+        html += `<div class="screenshot-container" style="margin-top: 15px; margin-bottom: 25px;">`;
+        sectionImages.forEach((base64) => {
+          html += `
+            <div class="screenshot-wrapper">
+              <img src="data:image/png;base64,${base64}" alt="Step ${stepNumber}.${subStep}">
+            </div>
+          `;
+        });
+        html += `</div>`;
+      }
+
+      subStep++;
+    }
+
+    return html;
+
+  } catch (e) {
+
+    console.error("Execution data parse error:", e);
+    return "<p>Invalid execution data format.</p>";
+
+  }
+
+}
+
+    function displayReportData(records) {
+      const container = document.getElementById("report-container");
+      container.innerHTML = "";
+
+      // Ensure scenarios are displayed in the intended order (e.g., Maker then Approver),
+      // not in whatever order the backend happened to return.
+      //
+      // Primary ordering (when available): use `Testcase_scenario_name` as a sequence source.
+      // Fallback ordering: derive a rank from role keywords in `Test_scnarios`.
+
+      function scenarioKey(rec) {
+        return String(rec?.Test_scnarios || rec?.Testcase_scenario_name || "").trim();
+      }
+
+      function normalizeKey(s) {
+        return String(s || "").toLowerCase().trim();
+      }
+
+      function scenarioRoleRank(rec) {
+        const key = normalizeKey(scenarioKey(rec));
+        // role-based ordering fallback
+        // maker should be step 1, recommender should be step 2, approver should be step 3
+        if (key.includes("maker")) return 10;
+        if (key.includes("recommender")) return 20;
+        if (key.includes("checker")) return 30;
+        if (key.includes("reviewer")) return 40;
+        if (key.includes("approver")) return 50;
+        return 999;
+      }
+
+      const orderSource = records.find(r => r && r.Testcase_scenario_name) || {};
+      const rawOrder = orderSource.Testcase_scenario_name;
+      let scenarioOrder = [];
+
+      if (rawOrder && typeof rawOrder === "object" && !Array.isArray(rawOrder)) {
+        scenarioOrder = Object.values(rawOrder).map(v => String(v));
+      } else if (Array.isArray(rawOrder)) {
+        scenarioOrder = rawOrder.map(v => String(v));
+      } else if (typeof rawOrder === "string") {
+        // handle "A,B" or "A + B" or "A > B"
+        scenarioOrder = rawOrder.split(/[,>+]/g).map(s => s.trim()).filter(Boolean);
+      }
+
+      const normalizedOrder = scenarioOrder.map(s => s.toLowerCase());
+
+      const sortedRecords = [...records].sort((a, b) => {
+        const aKey = normalizeKey(scenarioKey(a));
+        const bKey = normalizeKey(scenarioKey(b));
+
+        const aIdx = normalizedOrder.findIndex(x => aKey === x || aKey.includes(x) || x.includes(aKey));
+        const bIdx = normalizedOrder.findIndex(x => bKey === x || bKey.includes(x) || x.includes(bKey));
+
+        const ai = aIdx === -1 ? Number.POSITIVE_INFINITY : aIdx;
+        const bi = bIdx === -1 ? Number.POSITIVE_INFINITY : bIdx;
+
+        // If we have a real order from `Testcase_scenario_name`, honor it.
+        if (Number.isFinite(ai) || Number.isFinite(bi)) {
+          if (ai !== bi) return ai - bi;
+        }
+
+        // Fallback: role-based rank
+        const ar = scenarioRoleRank(a);
+        const br = scenarioRoleRank(b);
+        if (ar !== br) return ar - br;
+
+        // Final tie-breaker: alphabetical
+        return aKey.localeCompare(bKey);
+      });
+
+      function scenarioMainStep(rec) {
+        const key = normalizeKey(scenarioKey(rec));
+        const idx = normalizedOrder.findIndex(x => key === x || key.includes(x) || x.includes(key));
+        if (idx !== -1) return idx + 1;
+
+        // Fallback to role-based ranking
+        const rank = scenarioRoleRank(rec);
+        if (rank === 10) return 1; // maker
+        if (rank === 20) return 2; // recommender  
+        if (rank === 50) return 3; // approver
+        if (rank === 30) return 4; // checker
+        if (rank === 40) return 5; // reviewer
+        return null;
+      }
+
+      // Create a map of scenarios to their dynamic step numbers
+      const allScenarios = records.map(r => normalizeKey(scenarioKey(r)));
+      const uniqueScenarios = [...new Set(allScenarios)];
+      
+      console.log('All scenarios:', allScenarios);
+      console.log('Unique scenarios:', uniqueScenarios);
+      
+      // Sort scenarios by their role rank to determine order
+      const scenarioRanks = uniqueScenarios.map(scenario => {
+        const tempRec = { Test_scnarios: scenario };
+        return { scenario, rank: scenarioRoleRank(tempRec) };
+      }).sort((a, b) => a.rank - b.rank);
+      
+      console.log('Scenario ranks:', scenarioRanks);
+      
+      // Create a mapping from scenario to step number
+      const scenarioToStep = {};
+      scenarioRanks.forEach((item, index) => {
+        scenarioToStep[item.scenario] = index + 1;
+      });
+      
+      console.log('Scenario to step mapping:', scenarioToStep);
+
+      // Simplified step calculation based on sorted records
+      sortedRecords.forEach((record, index) => {
+        const card = document.createElement("div");
+        card.classList.add("report-card");
+
+        // Try to extract step number from scenario name or use sequential numbering
+        let mainStep = index + 1;
+        
+        // If there's only one record, try to determine step from scenario name
+        if (sortedRecords.length === 1) {
+          const scenarioName = (record.Test_scnarios || record.Testcase_scenario_name || '').toLowerCase();
+          
+          // Try to extract step number from scenario name patterns
+          if (scenarioName.includes('maker')) {
+            mainStep = 1;
+          } else if (scenarioName.includes('recommender')) {
+            mainStep = 2;
+          } else if (scenarioName.includes('checker')) {
+            mainStep = 3;
+          } else if (scenarioName.includes('approver')) {
+            // Approver is typically step 2 or 3 depending on workflow
+            // Check scenario name for hints about position
+            if (scenarioName.includes('nfa') || scenarioName.includes('note for approval')) {
+              mainStep = 3; // NFA workflows typically have maker, recommender, approver
+            } else {
+              mainStep = 2; // ECF workflows typically have maker, approver
+            }
+          } else if (scenarioName.includes('reviewer')) {
+            mainStep = 4;
+          }
+        }
+        
+        console.log(`Record ${index}:`, {
+          scenarioName: record.Test_scnarios || record.Testcase_scenario_name,
+          recordCount: sortedRecords.length,
+          assignedStep: mainStep
+        });
+        
+        const inputDataTableHtml = record.outputdata ? buildNormalInputTable(record.outputdata, mainStep, record.base64_images, record.screenshoot) : "No input data available.";
+
+        // Format Date
+        const formattedDate = record.created_date ? record.created_date.split('-').reverse().join('-') : 'N/A';
+
+        // Status → single-pill summary with color coding (matching run_summary.html)
+        let statusLabel = 'YET TO START';
+        let statusClass = 'status-yet-to-start';
+        const rawStatus = record.status;
+
+        if (rawStatus && rawStatus !== 'None') {
+          const lower = String(rawStatus).toLowerCase();
+          if (lower.includes('success') || lower.includes('pass') || lower.includes('completed') || lower.includes('done')) {
+            statusLabel = 'SUCCESS';
+            statusClass = 'status-success';
+          } else if (lower.includes('fail') || lower.includes('error')) {
+            statusLabel = 'FAILED';
+            statusClass = 'status-failed';
+          } else if (lower.includes('progress') || lower.includes('running') || lower.includes('processing') || lower.includes('started')) {
+            statusLabel = 'IN PROGRESS';
+            statusClass = 'status-in-progress';
+          } else {
+            statusLabel = rawStatus.toUpperCase();
+            statusClass = 'status-yet-to-start';
+          }
+        }
+
+        card.innerHTML = `
+          <div class="summary-grid">
+            <div class="summary-item"><label>Client</label><span>${record.client_name || ''}</span></div>
+            <div class="summary-item"><label>Environment</label><span>${record.environment || ''}</span></div>
+            <div class="summary-item"><label>Module</label><span>${record.Module || record.project_module || ''}</span></div>
+            <div class="summary-item"><label>Scenario Code</label><span style="color:var(--primary)">${record.Testcase_code || record.testcase_code || record.code || ''}</span></div>
+            <div class="summary-item"><label>Batch Code</label><span>${record.batch_code || ''}</span></div>
+            <div class="summary-item"><label>Scenario Name</label><span>${record.Testcase_scenario_name || ''}</span></div>
+            <div class="summary-item"><label>Date</label><span>${formattedDate}</span></div>
+            <div class="summary-item"><label>Status</label><span class="${statusClass} status-text">${statusLabel}</span></div>
+          </div>
+
+          <div style="margin-bottom:10px;">
+            <h3 style="font-size:16px; margin-bottom:5px;">Step ${mainStep}: ${record.Test_scnarios || record.Testcase_scenario_name || 'No scenario description'}</h3>
+          </div>
+
+          <div class="input-data-section">
+            <h3 style="font-size:16px; margin-bottom:15px; border-bottom: 2px solid var(--primary); display:inline-block;">Execution Data</h3>
+            <div>${inputDataTableHtml}</div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    document.querySelector(".logout").onclick = () => {
+      sessionStorage.clear();
+      window.location.href = "/userserv/authtoken-form/";
+    };
+  </script>
+</body>
+</html>

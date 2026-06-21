@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoFlow | Template Summary</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent: #10b981;
+      --bg: #0f172a;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --input-bg: #f8fafc;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; outline: none; }
+    body { margin: 0; font-family: "Plus Jakarta Sans", sans-serif; background-color: #f4f7fe; color: var(--text-main); display: flex; }
+
+    /* SIDEBAR - PROFESSIONAL STYLE */
+    .sidebar { 
+      width: 260px; 
+      height: 100vh; 
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      color: white; 
+      position: fixed; 
+      padding: 30px 20px; 
+      z-index: 100;
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .sidebar .logo { 
+      font-size: 22px; 
+      font-weight: 800; 
+      margin-bottom: 50px; 
+      display: flex; 
+      align-items: center; 
+      gap: 10px; 
+      color: #fff; 
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar .logo:hover {
+      background: rgba(99, 102, 241, 0.15);
+      transform: translateY(-2px);
+    }
+    
+    .sidebar .logo i { 
+      color: var(--primary); 
+      font-size: 24px;
+      filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5));
+    }
+    
+    .nav-item { 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      padding: 14px 18px; 
+      border-radius: 12px; 
+      color: #94a3b8; 
+      text-decoration: none; 
+      margin-bottom: 8px; 
+      font-size: 14px; 
+      font-weight: 600;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .nav-item::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 3px;
+      background: var(--primary);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+    
+    .nav-item:hover:not(.active) { 
+      background: rgba(255, 255, 255, 0.08); 
+      color: white;
+      transform: translateX(4px);
+    }
+    
+    .nav-item.active { 
+      background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    }
+    
+    .nav-item.active::before {
+      transform: scaleY(1);
+    }
+    
+    .nav-item i {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* MAIN */
+    .main { margin-left: 260px; width: calc(100% - 260px); padding: 40px; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+    header h1 { font-size: 24px; font-weight: 700; color: var(--bg); margin: 0; }
+    .user-badge { background: white; padding: 8px 16px; border-radius: 30px; font-weight: 600; font-size: 14px; border: 1px solid var(--border); display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+    /* TABLE & CARDS */
+    .card { background: var(--card-bg); border-radius: 20px; padding: 25px; margin-bottom: 30px; border: 1px solid var(--border); }
+    .filter-grid { display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end; }
+    .input-group { flex: 1; min-width: 180px; }
+    .input-group label { 
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px; 
+      font-weight: 700; 
+      text-transform: uppercase; 
+      color: var(--text-muted); 
+      margin-bottom: 6px; 
+    }
+    
+    .input-group label i {
+      font-size: 12px;
+      color: var(--primary);
+    }
+    select { width: 100%; background: var(--input-bg); border: 1.5px solid var(--border); padding: 10px 14px; border-radius: 10px; font-size: 14px; }
+
+    .btn { padding: 9px 16px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-add { background: var(--accent); color: white; }
+    .btn-outline { background: #f1f5f9; color: var(--text-muted); border: 1px solid var(--border); }
+    .btn-reset { background: #ffffff; color: var(--text-muted); border: 1px solid var(--border); }
+    .btn-reset:hover { background: #f1f5f9; }
+
+    .template-status-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0;
+      border-radius: 0;
+      font-size: 13px;
+      font-weight: 600;
+      background: transparent;
+      border: none;
+    }
+    .template-status-draft { color: #9a3412; }
+    .template-status-submitted { color: #047857; }
+
+    .table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { 
+      width: 100%; 
+      min-width: 1300px; 
+      border-collapse: separate;
+      border-spacing: 0;
+      table-layout: fixed;
+    }
+    th { 
+      text-align: left; 
+      padding: 12px 16px; 
+      font-size: 11px; 
+      color: var(--text-muted); 
+      text-transform: uppercase; 
+      background: linear-gradient(to bottom, #f8fafc 0%, #f1f5f9 100%);
+      border-bottom: 2px solid var(--border); 
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    td { 
+      padding: 12px 16px; 
+      font-size: 13px; 
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+      font-weight: 600;
+    }
+    
+    /* Column widths */
+    th:nth-child(1), td:nth-child(1) { width: 4%; min-width: 50px; text-align: center; } /* S.No */
+    th:nth-child(2), td:nth-child(2) { width: 13%; min-width: 130px; } /* Test Case Code */
+    th:nth-child(3), td:nth-child(3) { width: 8%; min-width: 70px; } /* Client */
+    th:nth-child(4), td:nth-child(4) { width: 10%; min-width: 90px; } /* Environment */
+    th:nth-child(5), td:nth-child(5) { width: 8%; min-width: 70px; } /* Module */
+    th:nth-child(6), td:nth-child(6) { width: 20%; min-width: 180px; } /* Scenario */
+    th:nth-child(7), td:nth-child(7) { width: 10%; min-width: 90px; } /* Creation Date */
+    th:nth-child(8), td:nth-child(8) { width: 10%; min-width: 90px; } /* Updated Date */
+    th:nth-child(9), td:nth-child(9) { width: 10%; min-width: 100px; text-align: center; padding-right: 20px; } /* Template Status */
+    th:nth-child(10), td:nth-child(10) { width: 6%; min-width: 70px; text-align: center; padding-left: 20px; } /* Status */
+    th:nth-child(11), td:nth-child(11) { width: 8%; min-width: 80px; text-align: center; } /* Actions */
+    
+    td:last-child, th:last-child { white-space: nowrap; }
+    
+    /* Scenario column - allow text wrapping for long names */
+    td:nth-child(6) {
+      word-wrap: break-word;
+      white-space: normal;
+      line-height: 1.4;
+    }
+    
+    tbody tr {
+      transition: background-color 0.2s;
+    }
+    
+    tbody tr:hover {
+      background-color: #f8fafc;
+    }
+
+
+    /* TOGGLE */
+    .toggle-switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: 0.3s; border-radius: 26px; }
+    .toggle-slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: 0.3s; border-radius: 50%; }
+    .toggle-switch input:checked + .toggle-slider { background-color: var(--accent); }
+    .toggle-switch input:checked + .toggle-slider:before { transform: translateX(24px); }
+
+    /* PAGINATION */
+    .pagination { padding: 20px 25px; display: flex; justify-content: flex-end; align-items: center; gap: 12px; background: #f8fafc; }
+    .page-controls { display: flex; align-items: center; gap: 8px; }
+    .page-info { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+    .page-btn { width: 35px; height: 35px; border-radius: 8px; border: 1px solid var(--border); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* NOTIFICATION TOAST */
+    #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+    .toast { background: #1e293b; color: white; padding: 12px 24px; border-radius: 12px; margin-top: 10px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease-out; }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  </style>
+</head>
+
+<body>
+  <div id="toast-container"></div>
+
+  <aside class="sidebar">
+    <a href="#" class="logo"><i class="fa-solid fa-bolt-lightning"></i> AUTOFLOW</a>
+    <nav>
+      <a href="/automationserv/template_summary-form/" class="nav-item active"><i class="fa-solid fa-layer-group"></i> Templates</a>
+      <a href="/automationserv/run_summary-form/" class="nav-item"><i class="fa-solid fa-play"></i> Run</a>
+<!--      <a href="/automationserv/report_summary-form/" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Report</a>-->
+    </nav>
+  </aside>
+
+  <main class="main">
+    <header>
+      <h1>Template Configuration</h1>
+      <div class="user-badge">
+        <i class="fa-regular fa-circle-user"></i>
+        <span id="usernameDisplay">Guest</span>
+         <a href="#" class="logout" style="color:var(--danger); margin-left:10px;"><i class="fa-solid fa-power-off"></i></a>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="filter-grid">
+        <div class="input-group">
+          <label><i class="fa-solid fa-building"></i> Client</label>
+          <select class="client"><option value="">Select Client</option>
+              <option value="NF">NF</option>
+              <option value="NAC">NAC</option>
+              <option value="KVB">KVB</option>
+              <option value="VBHC">VBHC</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label><i class="fa-solid fa-server"></i> Environment</label>
+          <select class="env"><option value="">Select Env</option><option value="DO">DO</option><option value="SIT">SIT</option><option value="UAT">UAT</option></select>
+        </div>
+        <div class="input-group">
+          <label><i class="fa-solid fa-cube"></i> Module</label>
+          <select class="module">
+            <option value="">All Modules</option>
+            <option value="Vendor">Vendor</option><option value="ECF">ECF</option><option value="AP">AP</option><option value="ememo">ememo</option><option value="TA">TA</option><option value="PRPO">PRPO</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label><i class="fa-solid fa-code"></i> Testcase Code</label>
+          <input type="text" class="testcase-code" placeholder="Search by code..." style="width: 100%; background: var(--input-bg); border: 1.5px solid var(--border); padding: 10px 14px; border-radius: 10px; font-size: 14px;">
+        </div>
+        <div class="input-group">
+          <label><i class="fa-solid fa-check-circle"></i> Template Status</label>
+          <select class="template-status">
+            <option value="">All Status</option>
+            <option value="Draft">Draft</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-search"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+        <button class="btn btn-reset"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+      </div>
+    </section>
+
+    <section class="card" style="padding:0;">
+      <div style="padding:20px; display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="font-size:18px; margin:0;">Template Summary</h2>
+        <button class="btn btn-add" id="addTemplateBtn"><i class="fa-solid fa-plus"></i> Add Template</button>
+      </div>
+      <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>S.No</th>
+            <th>SCENARIO CODE</th>
+            <th>CLIENT</th>
+            <th>ENVIRONMENT</th>
+            <th>MODULE</th>
+            <th>SCENARIO NAME</th>
+            <th>CREATION DATE</th>
+            <th>UPDATED DATE</th>
+            <th style="text-align:center;">TEMPLATE STATUS</th>
+            <th style="text-align:center;">STATUS</th>
+            <th style="text-align:center;">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody id="table-body-template"></tbody>
+      </table>
+      </div>
+      <div class="pagination">
+        <div class="page-controls">
+          <span class="page-info">Page <span id="currentPageTemplate">1</span></span>
+          <button class="page-btn" id="prevBtnTemplate"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="page-btn" id="nextBtnTemplate"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // --- SIMPLE TOKEN GUARD (frontend-only) ---
+    (function enforceAuth() {
+      const token = sessionStorage.getItem("authToken");
+      if (!token) {
+        sessionStorage.clear();
+        window.location.href = "/userserv/authtoken-form/";
+      }
+    })();
+
+    // --- AUTH-AWARE FETCH WRAPPER ---
+    function authFetch(url, options = {}) {
+      const token = sessionStorage.getItem("authToken");
+      const merged = { credentials: "same-origin", ...(options || {}) };
+      const baseHeaders = (options && options.headers) ? options.headers : {};
+      merged.headers = { ...baseHeaders };
+      if (token) merged.headers["Authorization"] = `Token ${token}`;
+      return fetch(url, merged).then(res => {
+        if (res.status === 401 || res.status === 403) {
+          sessionStorage.clear();
+          window.location.href = "/userserv/authtoken-form/";
+          throw new Error("Unauthorized");
+        }
+        return res;
+      });
+    }
+
+    // --- NOTIFICATION SYSTEM ---
+    function notify(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.style.borderLeft = `5px solid ${type === 'success' ? '#10b981' : '#ef4444'}`;
+      toast.innerHTML = `
+        <i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation'}" style="color:${type === 'success' ? '#10b981' : '#ef4444'}"></i>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 500);
+      }, 3000);
+    }
+
+    // --- TOGGLE LOGIC ---
+    function handleToggle(id, isChecked, toggleInput) {
+      const statusValue = isChecked ? 1 : 0;
+      const statusLabel = isChecked ? "Active" : "Inactive";
+      toggleInput.disabled = true;
+
+      authFetch(`/automationserv/template_summary?id=${id}&active=${statusValue}`, {
+        method: 'DELETE'
+      })
+        .then(res => {
+          if (!res.ok) throw new Error("Server Error");
+          notify(`Template set to ${statusLabel}`);
+
+          // Enable/disable the edit button in the same row based on status
+          const row = toggleInput.closest('tr');
+          if (row) {
+            const editBtn = row.querySelector('.btn-edit');
+            if (editBtn) {
+              if (isChecked) {
+                editBtn.disabled = false;
+                editBtn.style.opacity = '';
+                editBtn.style.cursor = '';
+                editBtn.style.pointerEvents = '';
+              } else {
+                editBtn.disabled = true;
+                editBtn.style.opacity = '0.5';
+                editBtn.style.cursor = 'not-allowed';
+                editBtn.style.pointerEvents = 'none';
+              }
+            }
+          }
+        })
+        .catch(err => {
+          notify("Failed to update status", "error");
+          toggleInput.checked = !isChecked;
+        })
+        .finally(() => {
+          toggleInput.disabled = false;
+        });
+    }
+
+    // --- DATA LOADING ---
+    let currentPage = 1;
+    let hasNext = false;
+    let hasPrevious = false;
+
+    const DRAFTS_KEY = "draftTemplates_v1";
+
+    function safeJsonParse(raw, fallback) {
+      try { return JSON.parse(raw); } catch { return fallback; }
+    }
+
+    function loadDrafts() {
+      const drafts = safeJsonParse(localStorage.getItem(DRAFTS_KEY), []);
+      // localStorage might contain "null" (JSON.parse -> null). Always normalize to array.
+      return Array.isArray(drafts) ? drafts : [];
+    }
+
+    function saveDrafts(drafts) {
+      localStorage.setItem(DRAFTS_KEY, JSON.stringify(drafts));
+    }
+
+    function deleteDraftById(draftId) {
+      const drafts = loadDrafts().filter(d => d && d.id !== draftId);
+      saveDrafts(drafts);
+    }
+
+    function formatDateOnly(ts) {
+      if (!ts) return "N/A";
+      try {
+        const d = new Date(ts);
+        if (Number.isNaN(d.getTime())) return "N/A";
+        const dd = String(d.getDate()).padStart(2, "0");
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const yyyy = String(d.getFullYear());
+        return `${dd}-${mm}-${yyyy}`;
+      } catch {
+        return "N/A";
+      }
+    }
+
+    function renderDraftRows(tbody) {
+      const clientVal = document.querySelector(".client").value;
+      const envVal = document.querySelector(".env").value;
+      const moduleVal = document.querySelector(".module").value;
+
+      const drafts = loadDrafts()
+        .filter(d => d && d.meta)
+        .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+
+      const filtered = drafts.filter(d => {
+        const m = d.meta || {};
+        if (clientVal && m.client_name !== clientVal) return false;
+        if (envVal && m.environment !== envVal) return false;
+        if (moduleVal && m.Project_module !== moduleVal) return false;
+        return true;
+      });
+
+      filtered.forEach((d, idx) => {
+        const m = d.meta || {};
+        const tr = document.createElement("tr");
+        const scenarioDisplay = m.Testcase_scenario_name || "—";
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${m.client_name || "—"}</td>
+          <td>${m.environment || "—"}</td>
+          <td>${m.Project_module || "—"}</td>
+          <td>${scenarioDisplay}</td>
+          <td style="font-weight:600;">—</td>
+          <td style="font-size:13px; color:var(--text-muted); white-space:nowrap;">${formatDateOnly(d.createdAt)}</td>
+          <td style="font-size:13px; color:var(--text-muted); white-space:nowrap;">${formatDateOnly(d.updatedAt)}</td>
+          <td style="text-align:center;">
+            <span class="template-status-badge template-status-draft">Draft</span>
+          </td>
+          <td style="text-align:center;">—</td>
+          <td style="text-align:center; display:flex; justify-content:center; gap:6px;">
+            <button class="btn btn-edit" style="background:#e0f2fe;" onclick="window.location.href='/automationserv/template-form/?draft=${encodeURIComponent(d.id)}'">
+              <i class="fa-solid fa-pencil"></i>
+            </button>
+            <button class="btn btn-draft-delete" data-draft-id="${d.id}" style="background:#fee2e2; color:#991b1b;">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      return filtered.length;
+    }
+
+    // Get overall scenario name - prefer fresh API data over cached data
+    function getOverallScenarioName(item) {
+      const templateId = item.template_id != null ? item.template_id : item.id;
+
+      // First priority: Use scenario_name from API (this is the correct overall scenario name)
+      if (item.scenario_name) {
+        console.log(`Template ${templateId} - Using API scenario_name:`, item.scenario_name);
+        return item.scenario_name;
+      }
+
+      // Second priority: Check localStorage for cached overall scenario name
+      if (templateId != null) {
+        try {
+          const raw = localStorage.getItem("templateData_" + templateId);
+          if (raw) {
+            const cached = JSON.parse(raw);
+            const payload = cached && cached.payload ? cached.payload : cached;
+            const overall = payload && payload.Testcase_scenario_name;
+            if (overall) {
+              console.log(`Template ${templateId} - Using cached scenario:`, overall);
+              if (Array.isArray(overall)) {
+                return overall.join(", ");
+              }
+              return overall;
+            }
+          }
+        } catch (e) {
+          console.warn("Error reading cached scenario name for template", templateId, e);
+        }
+      }
+
+      // Third priority: Fall back to Testcase_scenario_name from API
+      let scenario = item.Testcase_scenario_name;
+      console.log(`Template ${templateId} - Using Testcase_scenario_name:`, scenario);
+      
+      if (Array.isArray(scenario)) {
+        console.log(`Template ${templateId} - Joining array:`, scenario);
+        scenario = scenario.join(", ");
+      }
+      
+      const result = scenario || "N/A";
+      console.log(`Template ${templateId} - Final scenario display:`, result);
+      return result;
+    }
+
+ function buildQueryParams(pageIndex) {
+ const params = new URLSearchParams();
+ 
+ const clientVal = document.querySelector(".client").value;
+ const envVal    = document.querySelector(".env").value;
+ 
+ if (clientVal) params.append("client", clientVal);
+ if (envVal)    params.append("environment", envVal);
+ 
+ // We intentionally do NOT send module; we will filter by module on the frontend.
+ // Backend pagination is used only to fetch all records page by page.
+ params.append("page", String(pageIndex));
+ params.append("page_size", "100");
+ return params.toString();
+}
+
+    async function loadData() {
+      const tbody = document.getElementById('table-body-template');
+      tbody.innerHTML = "";
+
+      // Check if any filters are active
+      const moduleVal = document.querySelector(".module").value;
+      const testcaseCodeVal = document.querySelector(".testcase-code").value.toLowerCase().trim();
+      const templateStatusVal = document.querySelector(".template-status").value;
+      const clientVal = document.querySelector(".client").value;
+      const envVal    = document.querySelector(".env").value;
+      const hasFilters = !!(clientVal || envVal || moduleVal || testcaseCodeVal || templateStatusVal);
+
+      // 1) Fetch backend pages. With no filters, fetch only currentPage (one API call).
+      //    With filters active, fetch all pages from page 1 so frontend filtering works across all data.
+      let allRows = [];
+      let pageIndex = hasFilters ? 1 : currentPage;
+      let keepFetching = true;
+      let lastPag = {};
+
+      while (keepFetching) {
+        const query = buildQueryParams(pageIndex);
+        try {
+          const res = await authFetch(`/automationserv/template_summary?${query}`);
+          const data = await res.json();
+
+          const pageRows = Array.isArray(data.data) ? data.data : [];
+          allRows = allRows.concat(pageRows);
+
+          const pag = data.pagination || {};
+          lastPag = pag;
+          const hasNextPage = pag.has_next === true || pag.has_next === "true";
+
+          if (hasFilters && hasNextPage) {
+            pageIndex = (pag.index != null ? Number(pag.index) + 1 : pageIndex + 1);
+          } else {
+            keepFetching = false;
+          }
+        } catch (err) {
+          console.error("Error loading template summary page:", err);
+          keepFetching = false;
+        }
+      }
+      let rows = allRows;
+      
+      if (moduleVal && moduleVal !== "") {
+        const target = moduleVal.toString().trim().toUpperCase();
+        rows = rows.filter(item => {
+          const rawModule = (item.project_module || "").toString().trim().toUpperCase();
+          return rawModule === target || rawModule.includes(target);
+        });
+      }
+      
+      if (testcaseCodeVal && testcaseCodeVal !== "") {
+        rows = rows.filter(item => {
+          const itemCode = (item.testcase_code || '').toString().toLowerCase().trim();
+          return itemCode.includes(testcaseCodeVal);
+        });
+      }
+      
+      if (templateStatusVal && templateStatusVal !== "") {
+        rows = rows.filter(item => {
+          const statusVal = item.status != null ? Number(item.status) : 2;
+          const statusLabel = statusVal === 1 ? 'Draft' : 'Completed';
+          return statusLabel === templateStatusVal;
+        });
+      }
+
+      // 3) UI pagination
+      const pageSize = 10;
+      
+      // With filters: compute totalPages from all fetched rows and clamp currentPage
+      // Without filters: backend handles pagination, don't clamp currentPage
+      let totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
+      if (hasFilters) {
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+      }
+
+      // Without filters: backend already returned the correct page, render all rows directly.
+      // With filters: all pages were fetched, slice to the current UI page.
+      const startIndex = (currentPage - 1) * pageSize;
+      const visibleRows = hasFilters ? rows.slice(startIndex, startIndex + pageSize) : rows;
+
+      visibleRows.forEach((item, index) => {
+            console.log('Processing item:', index, item); // Debug: log entire item
+            
+            // Use activeinactive or temp_run from backend; default to active (1) when missing
+            const statusVal = item.activeinactive ?? item.temp_run ?? 1;
+            const isActive = statusVal == 1;
+            const tr = document.createElement('tr');
+
+            const scenarioDisplay = getOverallScenarioName(item);
+            console.log('Scenario display for row', index, ':', scenarioDisplay); // Debug: log final display value
+
+            const creationDate = item.createddate || item.created_date || 'N/A';
+            const updatedDate = item.updated_date || 'N/A';
+
+            const editDisabledAttr = isActive ? "" : "disabled";
+            const editExtraStyle = isActive ? "" : "opacity:0.5; cursor:not-allowed; pointer-events:none;";
+            const templateId = item.template_id != null ? item.template_id : item.id;
+            // status from API = full_partial: 1 = Draft, 2 = Completed
+            const templateStatusVal = item.status != null ? Number(item.status) : 2;
+            const templateStatusLabel = templateStatusVal === 1 ? 'Draft' : 'Completed';
+            const templateStatusClass = templateStatusVal === 1 ? 'template-status-draft' : 'template-status-submitted';
+
+            // Derive display testcase code from current module/env/client so it reflects updates (backend format: AUT+module+env+client+suffix)
+            const module = (item.project_module || '').toString().toUpperCase().replace(/\s/g, '');
+            const env = (item.environment || '').toString().toUpperCase();
+            const client = (item.client_name || '').toString().toUpperCase();
+            const storedCode = (item.testcase_code || '').toString();
+            const suffix = /\d{3}$/.test(storedCode) ? storedCode.slice(-3) : '001';
+            const displayTestcaseCode = (module && env && client)
+              ? 'AUT' + module + env + client + suffix
+              : (storedCode || 'N/A');
+
+            tr.innerHTML = `
+              <td>${startIndex + index + 1}</td>
+              <td style="font-weight:700; color:var(--primary);">${displayTestcaseCode}</td>
+              <td>${item.client_name || 'N/A'}</td>
+              <td>${item.environment || 'N/A'}</td>
+              <td>${item.project_module || 'N/A'}</td>
+              <td>${scenarioDisplay}</td>
+              <td style="font-size:13px; color:var(--text-muted); white-space:nowrap;">${creationDate}</td>
+              <td style="font-size:13px; color:var(--text-muted); white-space:nowrap;">${updatedDate}</td>
+              <td style="text-align:center;"><span class="template-status-badge ${templateStatusClass}">${templateStatusLabel}</span></td>
+              <td style="text-align:center;">
+                <label class="toggle-switch">
+                  <input type="checkbox" class="status-toggle" data-id="${templateId}" ${isActive ? 'checked' : ''}>
+                  <span class="toggle-slider"></span>
+                </label>
+              </td>
+              <td style="text-align:center; display:flex; justify-content:center; gap:6px;">
+                <!-- Edit Template (use underlying scenario template id when available) -->
+                <button class="btn btn-edit" ${editDisabledAttr} style="background:#e0f2fe; ${editExtraStyle}" onclick="window.location.href='/automationserv/template-form/?id=${templateId}&status=${templateStatusVal}'">
+                  <i class="fa-solid fa-pencil"></i>
+                </button>
+              </td>`;
+            tbody.appendChild(tr);
+          });
+
+      // If nothing was rendered, show a generic empty state
+      if (!tbody.children.length) {
+        const emptyTr = document.createElement("tr");
+        emptyTr.innerHTML = `
+          <td colspan="11" style="text-align:center; padding:40px; color:var(--text-muted);">
+            No data found
+          </td>
+        `;
+        tbody.appendChild(emptyTr);
+      }
+
+      // Update pagination from filtered rows
+      if (rows.length > 0) {
+        hasPrevious = currentPage > 1;
+        // Without filters: use backend's has_next since we only fetched one page
+        // With filters: use computed totalPages from all fetched rows
+        hasNext = hasFilters ? (currentPage < totalPages) : (lastPag.has_next === true || lastPag.has_next === "true");
+      } else {
+        currentPage = 1;
+        hasNext = false;
+        hasPrevious = false;
+      }
+
+      const pageLabel = document.getElementById("currentPageTemplate");
+      if (pageLabel) pageLabel.textContent = currentPage;
+
+      document.getElementById("prevBtnTemplate").disabled = !hasPrevious;
+      document.getElementById("nextBtnTemplate").disabled = !hasNext;
+    }
+
+    // --- EVENT LISTENERS ---
+    document.addEventListener("change", (e) => {
+      if (e.target.classList.contains("status-toggle")) {
+        handleToggle(e.target.dataset.id, e.target.checked, e.target);
+      }
+    });
+
+    document.getElementById("addTemplateBtn").onclick = () => window.location.href = "/automationserv/template-form/";
+
+    // Draft delete handler (delegated)
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest(".btn-draft-delete");
+      if (!btn) return;
+      const draftId = btn.getAttribute("data-draft-id");
+      if (!draftId) return;
+      const ok = confirm("Delete this draft? This cannot be undone.");
+      if (!ok) return;
+      deleteDraftById(draftId);
+      notify("Draft deleted");
+      loadData();
+    });
+
+    // Search button: reset to first page then load with filters
+    const searchBtn = document.querySelector(".btn-search");
+    if (searchBtn) {
+      searchBtn.addEventListener("click", () => {
+        currentPage = 1;
+        loadData();
+      });
+    }
+
+    // Reset button: clear filters and reload first page with no filters
+    const resetBtn = document.querySelector(".btn-reset");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => {
+        document.querySelectorAll(".client, .env, .module, .template-status").forEach(el => el.selectedIndex = 0);
+        document.querySelector(".testcase-code").value = "";
+        currentPage = 1;
+        loadData();
+      });
+    }
+
+    // Pagination controls: move page and reload with same filters
+    document.getElementById("prevBtnTemplate").onclick = () => {
+      if (hasPrevious) {
+        currentPage--;
+        loadData();
+      }
+    };
+    document.getElementById("nextBtnTemplate").onclick = () => {
+      if (hasNext) {
+        currentPage++;
+        loadData();
+      }
+    };
+
+    window.onload = () => {
+      // Logic to check session username; falls back to "Guest" as requested
+      const storedUser = sessionStorage.getItem("username");
+      document.getElementById("usernameDisplay").textContent = storedUser ? storedUser : "Guest";
+       document.querySelector(".logout").onclick = () => { sessionStorage.clear(); window.location.href = "/userserv/authtoken-form/"; };
+      loadData();
+    };
+
+    // Re-fetch data when user navigates back (bfcache)
+    window.addEventListener("pageshow", (event) => {
+      if (event.persisted) {
+        loadData();
+      }
+    });
+  </script>
+</body>
+</html>

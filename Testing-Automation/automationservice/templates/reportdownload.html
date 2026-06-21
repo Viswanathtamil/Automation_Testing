@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Client Date Selection Screen</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+<!--    body {-->
+<!--      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;-->
+<!--      background-color:#A9A9A9;-->
+<!--      margin: 0;-->
+<!--      padding: 0;-->
+<!--    }-->
+    .container {
+      max-width: 900px;
+      margin: 80px auto;
+      padding: 30px;
+      background-color: #FFF0F5;
+      border-radius: 1px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 40px;
+      color: #333;
+    }
+    .form-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 20px;
+      justify-content: space-between;
+      flex-wrap: wrap; /* stack nicely on small screens */
+    }
+    .form-group {
+      flex: 1;
+      min-width: 200px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #444;
+    }
+    select, input[type="date"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+    select:focus, input[type="date"]:focus {
+      border-color: #0078d4;
+      outline: none;
+    }
+<!--    .animated-download-btn {-->
+<!--      position: relative;-->
+<!--      width: 100px;-->
+<!--      height: 70px;-->
+<!--      border: none;-->
+<!--      border-radius: 80%;-->
+<!--      overflow: hidden;-->
+<!--      cursor: pointer;-->
+<!--      box-shadow: 0 4px 10px rgba(0,0,0,0.3);-->
+<!--      transition: transform 0.3s;-->
+<!--    }-->
+<!--    .animated-download-btn:hover {-->
+<!--      transform: scale(1.1);-->
+<!--    }-->
+<!--    .animated-download-btn video {-->
+<!--      width: 100%;-->
+<!--      height: 100%;-->
+<!--      object-fit: cover;-->
+<!--      pointer-events: none; /* allow button to receive clicks */-->
+<!--      display: block;-->
+<!--    }-->
+      .download-btn {
+        padding: 15px;
+        background-color: #0078d4;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .download-btn:hover {
+        background-color: #005fa3;
+      }
+      body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 200px;
+      height: 100%;
+      background: #34495e;
+      color: white;
+      padding-top: 20px;
+    }
+    .sidebar a {
+      display: block;
+      color: white;
+      padding: 15px 20px;
+      text-decoration: none;
+      font-size: 18px;
+      letter-spacing: 0.5px;
+      margin-top: 20px;
+    }
+    .sidebar a:hover {
+      background: #3d566e;
+    }
+    .sidebar a.active {
+      background: #5F9EA0;
+      color: white;
+    }
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 200px;
+      right: 0;
+      height: 50px;
+      background: #5F9EA0;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 1000;
+    }
+    .topbar a {
+      color: white;
+      margin-right: 20px;
+      text-decoration: none;
+      font-size: 20px;
+    }
+    .back-button {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-size: 18px;
+      margin: 10px 20px;
+    }
+    .back-button .label {
+      font-weight: bold;
+      color: navy;
+      margin-top: 50px;
+      margin-left : 200px;
+    }
+    .user-topbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+  }
+  .user-topbar .username {
+    font-weight: bold;
+    color: #fff;
+  }
+  .user-topbar .logout {
+    color: black;
+    font-size: 20px;
+    text-decoration: none;
+    border: 1px solid #808080;
+    background: #fff;
+    padding: 5px 10px;
+    border-radius:20px;
+    cursor: pointer;
+  }
+  .user-topbar .logout:hover {
+    color: #e35d28;
+  }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <a href="" class="active"><i class="fa-solid fa-layer-group"></i> Report</a>
+  </div>
+
+  <div class="topbar">
+    <a href="" ><i class="fa-duotone fa-solid fa-sliders"></i> Report</a>
+    <div class="user-topbar">
+      <span class="username" id="usernameDisplay"></span>
+      <a href="#" class="logout"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+  </div>
+  </div>
+  <div class="back-button" onclick="history.back()">
+  <!--  <span class="arrow">&#8592;</span>-->
+    <span class="label">Back</span>
+  </div>
+  <div class="container">
+    <h2>Automation Report</h2>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="clientName">Client Name</label>
+        <select id="clientName" name="client">
+          <option value="">-- Choose Client --</option>
+          <option value="NAC">NAC</option>
+          <option value="NF">NF</option>
+          <option value="IB">IB</option>
+          <option value="KVB">KVB</option>
+          <option value="VBHC">VBHC</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="moduleName">Module</label>
+        <select id="moduleName">
+          <option value="" disabled selected>Choose Module</option>
+          <option value="Vendor">Vendor</option>
+          <option value="ECF">ECF</option>
+          <option value="AP">AP</option>
+          <option value="TA">TA</option>
+          <option value="PRPO">PRPO</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="fromDate">From Date</label>
+        <input type="date" id="fromDate">
+      </div>
+
+      <div class="form-group">
+        <label for="toDate">To Date</label>
+        <input type="date" id="toDate">
+      </div>
+
+<!--      <button class="animated-download-btn" title="Download">-->
+<!--        <video src="download-button-animated-icon-in-lottie-json-gif-static-svg-file-formats&#45;&#45;gradient-call-to-action-buttons-pack-design-development-icons-7525576.mp4" autoplay loop muted playsinline></video>-->
+<!--      </button>-->
+      <button class="download-btn" title="Download">
+        <svg xmlns="http://www.w3.org/2000/svg" height="30" width="30" fill="white" viewBox="0 0 24 24">
+          <path d="M12 4v12m0 0l-6-6m6 6l6-6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+<script>
+    // --- SIMPLE TOKEN GUARD (frontend-only) ---
+    (function enforceAuth() {
+      const token = sessionStorage.getItem("authToken");
+      if (!token) {
+        sessionStorage.clear();
+        window.location.href = "/userserv/authtoken-form/";
+      }
+    })();
+
+    // --- AUTH-AWARE FETCH WRAPPER ---
+    function authFetch(url, options = {}) {
+      const token = sessionStorage.getItem("authToken");
+      const merged = { credentials: "same-origin", ...(options || {}) };
+      const baseHeaders = (options && options.headers) ? options.headers : {};
+      merged.headers = { ...baseHeaders };
+      if (token) merged.headers["Authorization"] = `Token ${token}`;
+      return fetch(url, merged).then(res => {
+        if (res.status === 401 || res.status === 403) {
+          sessionStorage.clear();
+          window.location.href = "/userserv/authtoken-form/";
+          throw new Error("Unauthorized");
+        }
+        return res;
+      });
+    }
+    document.querySelector(".download-btn").addEventListener("click", function () {
+      const clientname = document.getElementById("clientName").value.trim();
+      const module = document.getElementById("moduleName").value.trim();
+      const from_date = document.getElementById("fromDate").value.trim();
+      const to_date = document.getElementById("toDate").value.trim();
+
+      if (!clientname || !module || !from_date || !to_date) {
+        alert("Please enter all fields");
+        return;
+      }
+
+      const url = `/automationserv/trstreport?clientname=${encodeURIComponent(clientname)}&module=${encodeURIComponent(module)}&fromdate=${encodeURIComponent(from_date)}&todate=${encodeURIComponent(to_date)}`;
+      console.log("Fetching URL:", url);
+
+      authFetch(url, {
+        method: "GET",
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.blob();
+        })
+        .then(blob => {
+          const link = document.createElement("a");
+          link.href = window.URL.createObjectURL(blob);
+          link.download = "report.pdf";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          alert("❌ Error: Something went wrong downloading the PDF!");
+        });
+    });
+
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === name + "=") {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+    document.addEventListener("DOMContentLoaded", function() {
+  const user = sessionStorage.getItem("username") || "Guest";
+  document.getElementById("usernameDisplay").textContent = user;
+  });
+  document.querySelector(".logout").addEventListener("click", function() {
+    sessionStorage.clear();
+    window.location.href = "/userserv/authtoken-form/";
+  });
+  </script>
+</body>
+</html>

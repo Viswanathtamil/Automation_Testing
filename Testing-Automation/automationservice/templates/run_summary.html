@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoFlow | Run Summary</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- PDF merging library for combining multiple run reports into one PDF -->
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-light: #eef2ff;
+      --accent: #10b981;
+      --bg: #0f172a;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --input-bg: #f8fafc;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; outline: none; }
+    body { margin: 0; font-family: "Plus Jakarta Sans", sans-serif; background-color: #f4f7fe; color: var(--text-main); display: flex; }
+
+    /* SIDEBAR - PROFESSIONAL STYLE */
+    .sidebar { 
+      width: 260px; 
+      height: 100vh; 
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      color: white; 
+      position: fixed; 
+      padding: 30px 20px; 
+      z-index: 100;
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .sidebar .logo { 
+      font-size: 22px; 
+      font-weight: 800; 
+      margin-bottom: 50px; 
+      display: flex; 
+      align-items: center; 
+      gap: 10px; 
+      color: #fff; 
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar .logo:hover {
+      background: rgba(99, 102, 241, 0.15);
+      transform: translateY(-2px);
+    }
+    
+    .sidebar .logo i { 
+      color: var(--primary); 
+      font-size: 24px;
+      filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5));
+    }
+    
+    .nav-item { 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      padding: 14px 18px; 
+      border-radius: 12px; 
+      color: #94a3b8; 
+      text-decoration: none; 
+      margin-bottom: 8px; 
+      font-size: 14px; 
+      font-weight: 600;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .nav-item::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 3px;
+      background: var(--primary);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+    
+    .nav-item:hover:not(.active) { 
+      background: rgba(255, 255, 255, 0.08); 
+      color: white;
+      transform: translateX(4px);
+    }
+    
+    .nav-item.active { 
+      background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    }
+    
+    .nav-item.active::before {
+      transform: scaleY(1);
+    }
+    
+    .nav-item i {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* MAIN CONTENT */
+    .main { margin-left: 260px; width: calc(100% - 260px); padding: 30px 40px; min-height: 100vh; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+    header h1 { font-size: 24px; font-weight: 700; color: var(--bg); margin: 0; }
+    .user-badge { background: white; padding: 8px 16px; border-radius: 30px; font-weight: 600; font-size: 14px; border: 1px solid var(--border); display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+    /* CARDS & FILTERS */
+    .card { background: var(--card-bg); border-radius: 20px; padding: 25px; margin-bottom: 30px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    
+    .card h3 {
+      font-size: 18px;
+      margin: 0 0 24px 0;
+      color: var(--bg);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--primary-light);
+    }
+    
+    .card h3 i {
+      color: var(--primary);
+      font-size: 20px;
+    }
+    
+    .filter-grid { display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end; }
+    .input-group { flex: 1; min-width: 140px; max-width: 200px; }
+    .button-group { margin-left: auto; display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+    .input-group label { 
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px; 
+      font-weight: 700; 
+      text-transform: uppercase; 
+      color: var(--text-muted); 
+      margin-bottom: 6px; 
+      letter-spacing: 0.5px; 
+    }
+    
+    .input-group label i {
+      font-size: 12px;
+      color: var(--primary);
+    }
+    select, input { width: 100%; background: var(--input-bg); border: 1.5px solid var(--border); padding: 10px 14px; border-radius: 10px; font-size: 14px; font-family: inherit; }
+    select:focus, input:focus { border-color: var(--primary); }
+
+    /* BUTTONS */
+    .btn { padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    .btn-outline { background: white; border: 1.5px solid var(--border); color: var(--text-muted); }
+    .btn-outline:hover { background: #f1f5f9; }
+    .btn-reset { background: #ffffff; border: 1.5px solid var(--border); color: var(--text-muted); }
+    .btn-reset:hover { background: #f1f5f9; transform: translateY(-1px); }
+    .btn-download { background: #f59e0b; color: white; }
+    .btn-download:hover { background: #d97706; transform: translateY(-1px); }
+    .btn-run { background: var(--accent); color: white; }
+
+    /* TABLE */
+    table { 
+      width: 100%; 
+      min-width: 1100px;
+      border-collapse: separate;
+      border-spacing: 0;
+      table-layout: fixed;
+    }
+    
+    th { 
+      text-align: left; 
+      padding: 12px 16px; 
+      font-size: 11px; 
+      color: var(--text-muted); 
+      text-transform: uppercase; 
+      background: linear-gradient(to bottom, #f8fafc 0%, #f1f5f9 100%);
+      border-bottom: 2px solid var(--border); 
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    
+    td { 
+      padding: 12px 16px; 
+      font-size: 13px; 
+      font-weight: 600;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+    
+    tbody tr {
+      transition: background-color 0.2s;
+    }
+    
+    tbody tr:hover {
+      background-color: #f8fafc;
+    }
+    
+    /* Column widths */
+    th:nth-child(1), td:nth-child(1) { width: 5%; min-width: 50px; text-align: center; } /* S.No */
+    th:nth-child(2), td:nth-child(2) { width: 18%; min-width: 150px; } /* Batch Code */
+    th:nth-child(3), td:nth-child(3) { width: 8%; min-width: 70px; text-align: center; } /* Client */
+    th:nth-child(4), td:nth-child(4) { width: 6%; min-width: 60px; text-align: center; } /* Env */
+    th:nth-child(5), td:nth-child(5) { width: 10%; min-width: 80px; text-align: center; } /* Module */
+    th:nth-child(6), td:nth-child(6) { width: 13%; min-width: 110px; } /* Date */
+    th:nth-child(7), td:nth-child(7) { width: 12%; min-width: 100px; } /* Run By */
+    th:nth-child(8), td:nth-child(8) { width: 18%; min-width: 140px; } /* Status */
+    th:nth-child(9), td:nth-child(9) { width: 10%; min-width: 80px; text-align: center; } /* Actions */
+    
+    td:last-child, th:last-child { white-space: nowrap; }
+    /* Actions column - ensure proper alignment */
+    th:nth-child(9), td:nth-child(9) { 
+      text-align: center;
+      vertical-align: middle;
+    }
+    
+    /* Actions wrapper for proper icon alignment */
+    td:nth-child(9) {
+      white-space: nowrap;
+    }
+
+    .action-icon {
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text-muted);
+      margin: 0 4px;
+      padding: 6px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
+      width: 32px;
+      height: 32px;
+    }
+    .action-icon:hover {
+      color: var(--primary);
+      background: var(--primary-light);
+      transform: scale(1.1);
+    }
+
+    /* STATUS STYLING */
+    .status-text { 
+      font-size: 12px; 
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .status-success { 
+      color: #10b981;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status-failed {
+      color: #ef4444;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status-in-progress {
+      color: #f59e0b;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status-yet-to-start {
+      color: #6b7280;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Test Code Link Styling */
+    .testcode-link {
+      font-weight: 800;
+      color: var(--primary);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-block;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+    .testcode-link:hover {
+      color: var(--primary-hover);
+      background: var(--primary-light);
+      text-decoration: underline;
+    }
+
+    /* PAGINATION */
+    .pagination { padding: 20px 25px; display: flex; justify-content: flex-end; align-items: center; gap: 12px; background: #f8fafc; }
+    .page-controls { display: flex; align-items: center; gap: 8px; }
+    .page-info { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+    .page-btn { width: 35px; height: 35px; border-radius: 8px; border: 1px solid var(--border); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* LOADER */
+    #loader-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.7); z-index: 9999; display: none; justify-content: center; align-items: center; }
+    .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ============ RESPONSIVE DESIGN ============ */
+    
+    /* Large screens - optimize for 100% zoom (1200px-1600px) */
+    @media (min-width: 1200px) and (max-width: 1600px) {
+      .main { padding: 25px 30px; }
+      .card { margin-bottom: 25px; }
+      
+      /* Slightly reduce table spacing */
+      th, td { padding: 10px 6px; font-size: 12px; }
+    }
+    
+    /* Standard desktop (1024px-1199px) */
+    @media (min-width: 1024px) and (max-width: 1199px) {
+      .main { padding: 20px 25px; }
+      
+      /* Make table scrollable */
+      .card > div:last-child { overflow-x: auto; }
+      table { min-width: 900px; }
+      
+      th, td { padding: 8px 6px; font-size: 11px; }
+    }
+    
+    /* Tablets and smaller desktops (1024px and below) */
+    @media (max-width: 1024px) {
+      .sidebar { width: 220px; padding: 20px 15px; }
+      .main { margin-left: 220px; width: calc(100% - 220px); padding: 30px; }
+      header h1 { font-size: 22px; }
+      .filter-grid { gap: 12px; }
+      .input-group { min-width: 140px; }
+      
+      /* Make table scrollable */
+      .card > div:last-child { overflow-x: auto; }
+      table { min-width: 800px; }
+      th, td { padding: 10px 6px; font-size: 12px; }
+    }
+
+    /* Tablets (768px and below) */
+    @media (max-width: 768px) {
+      .sidebar { width: 200px; padding: 20px 10px; }
+      .sidebar .logo { font-size: 18px; margin-bottom: 30px; }
+      .nav-item { padding: 12px 14px; font-size: 13px; }
+      
+      .main { margin-left: 200px; width: calc(100% - 200px); padding: 20px; }
+      header { flex-direction: column; align-items: flex-start; gap: 15px; }
+      header h1 { font-size: 20px; }
+      .user-badge { font-size: 13px; padding: 6px 12px; }
+      
+      .card { padding: 20px; }
+      .card h3 { font-size: 16px; }
+      .filter-grid { gap: 10px; }
+      .input-group { min-width: 120px; flex: 1 1 calc(50% - 10px); }
+      
+      .btn { padding: 8px 16px; font-size: 13px; }
+      
+      /* Make table scrollable horizontally */
+      .card { overflow-x: auto; }
+      table { min-width: 900px; }
+      th, td { padding: 10px 12px; font-size: 12px; }
+    }
+
+    /* Mobile devices (480px and below) */
+    @media (max-width: 480px) {
+      .sidebar { 
+        width: 100%; 
+        height: auto; 
+        position: relative; 
+        padding: 15px; 
+      }
+      .sidebar .logo { font-size: 16px; margin-bottom: 20px; }
+      .nav-item { padding: 10px 12px; font-size: 12px; }
+      
+      .main { 
+        margin-left: 0; 
+        width: 100%; 
+        padding: 15px; 
+      }
+      
+      header { gap: 10px; }
+      header h1 { font-size: 18px; }
+      .user-badge { font-size: 12px; padding: 5px 10px; }
+      
+      .card { padding: 15px; border-radius: 15px; }
+      .card h3 { font-size: 15px; gap: 8px; }
+      .card h3 i { font-size: 16px; }
+      
+      .filter-grid { 
+        flex-direction: column; 
+        gap: 12px; 
+      }
+      .input-group { 
+        min-width: 100%; 
+        flex: 1 1 100%; 
+      }
+      
+      .btn { 
+        width: 100%; 
+        justify-content: center; 
+        padding: 10px; 
+        font-size: 13px; 
+      }
+      
+      table { min-width: 800px; }
+      th, td { padding: 8px 10px; font-size: 11px; }
+      
+      .pagination { 
+        flex-direction: column; 
+        gap: 10px; 
+        padding: 15px; 
+      }
+      .page-btn { width: 32px; height: 32px; }
+    }
+
+    /* Extra small devices (360px and below) */
+    @media (max-width: 360px) {
+      .main { padding: 10px; }
+      .card { padding: 12px; }
+      header h1 { font-size: 16px; }
+      .btn { font-size: 12px; padding: 8px; }
+      th, td { padding: 6px 8px; font-size: 10px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="loader-overlay"><div class="spinner"></div></div>
+
+  <aside class="sidebar">
+    <a href="#" class="logo"><i class="fa-solid fa-bolt-lightning"></i> AUTOFLOW</a>
+    <nav>
+      <a href="/automationserv/template_summary-form/" class="nav-item"><i class="fa-solid fa-layer-group"></i> Templates</a>
+      <a href="/automationserv/run_summary-form/" class="nav-item active"><i class="fa-solid fa-play"></i> Run</a>
+<!--      <a href="/automationserv/report_summary-form/" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Report</a>-->
+    </nav>
+  </aside>
+
+  <main class="main">
+    <header>
+      <h1>Execution Summary</h1>
+      <div class="user-badge">
+        <i class="fa-regular fa-circle-user"></i>
+        <span id="usernameDisplay">Guest</span>
+        <a href="#" class="logout" style="color:var(--danger); margin-left:10px;"><i class="fa-solid fa-power-off"></i></a>
+      </div>
+    </header>
+
+    <section class="card">
+      <h3><i class="fa-solid fa-filter"></i> Search Filters</h3>
+      <div class="filter-grid">
+        <div class="input-group">
+          <label><i class="fa-solid fa-calendar"></i> From Date</label>
+          <input type="text" class="from-date" placeholder="yyyy-mm-dd">
+        </div>
+        <div class="input-group">
+          <label><i class="fa-solid fa-calendar"></i> To Date</label>
+          <input type="text" class="to-date" placeholder="yyyy-mm-dd">
+        </div>
+        <div class="input-group">
+          <label><i class="fa-solid fa-building"></i> Client</label>
+          <select class="client">
+            <option value="">All Clients</option>
+            <option value="NF">NF</option>
+            <option value="NAC">NAC</option>
+            <option value="KVB">KVB</option>
+            <option value="VBHC">VBHC</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label><i class="fa-solid fa-server"></i> Environment</label>
+          <select class="env">
+            <option value="">All Envs</option>
+            <option value="DO">DO</option><option value="SIT">SIT</option><option value="UAT">UAT</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label><i class="fa-solid fa-cube"></i> Module</label>
+          <select class="module">
+            <option value="">All Modules</option>
+            <option value="Vendor">Vendor</option><option value="ECF">ECF</option><option value="AP">AP</option><option value="ememo">ememo</option><option value="TA">TA</option><option value="PRPO">PRPO</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label><i class="fa-solid fa-barcode"></i> Batch Code</label>
+          <input type="text" class="batch-code" placeholder="Search batch code...">
+        </div>
+        <div class="input-group">
+          <label><i class="fa-solid fa-circle-check"></i> Status</label>
+          <select class="status">
+            <option value="">Any Status</option>
+            <option value="Completed">Completed</option>
+            <option value="Failed">Failed</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Yet to start">Yet to start</option>
+          </select>
+        </div>
+        <div class="button-group">
+          <button class="btn btn-primary" id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+          <button class="btn btn-reset" id="btnReset"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+          <button class="btn btn-download" id="btnBulkDownload"><i class="fa-solid fa-download"></i> Bulk Download</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="padding:0; overflow:visible;">
+      <div style="padding:20px 25px; display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border);">
+        <h2 style="font-size:18px; margin:0; font-weight:700; color:var(--bg);">Execution Logs</h2>
+        <button class="btn btn-run" id="addRunBtn"><i class="fa-solid fa-bolt"></i> Run Process</button>
+      </div>
+
+      <div style="overflow-x: auto; max-width: 100%;">
+        <table>
+          <thead>
+            <tr>
+              <th>S.No</th>
+              <th>Batch Code</th>
+              <th>Client</th>
+              <th>Env</th>
+              <th>Module</th>
+              <th>Run Date</th>
+              <th>Run By</th>
+              <th>Status</th>
+              <th style="text-align:center;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="table-body-run"></tbody>
+        </table>
+      </div>
+
+      <div class="pagination">
+        <div class="page-controls">
+          <span class="page-info">Page <span id="currentPageRun">1</span></span>
+          <button class="page-btn" id="prevBtnRun"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="page-btn" id="nextBtnRun"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    // --- SIMPLE TOKEN GUARD (frontend-only) ---
+    (function enforceAuth() {
+      const token = sessionStorage.getItem("authToken");
+      if (!token) {
+        sessionStorage.clear();
+        window.location.href = "/userserv/authtoken-form/";
+      }
+    })();
+
+
+function authFetch(url, options = {}) {
+  const token = sessionStorage.getItem("authToken");
+
+  const merged = { credentials: "same-origin", ...(options || {}) };
+
+  const baseHeaders = options.headers || {};
+
+  merged.headers = { ...baseHeaders };
+
+  if (token) merged.headers["Authorization"] = `Token ${token}`;
+
+  return fetch(url, merged).then(res => {
+
+    if (res.status === 401 || res.status === 403) {
+      sessionStorage.clear();
+      window.location.href = "/userserv/authtoken-form/";
+      throw new Error("Unauthorized");
+    }
+
+    return res;
+
+  });
+}
+
+
+flatpickr(".from-date", { dateFormat: "Y-m-d" });
+flatpickr(".to-date", { dateFormat: "Y-m-d" });
+
+
+let runData = [];          // all filtered records (across all backend pages)
+let runPage = 1;           // current UI page (1-based)
+let runPageSize = 10;      // records per UI page
+let runHasNext = false;    // UI pagination flags
+let runHasPrevious = false;
+let runHasFilters = false; // track if filters are active
+
+// Normalize various date fields from API into YYYY-MM-DD string
+function normalizeRunDate(item) {
+  const raw =
+    item.updated_date ||
+    item.updateddate ||
+    item.run_date ||
+    item.createddate ||
+    item.created_date ||
+    item.date ||
+    item.timestamp;
+
+  if (!raw) return null;
+
+  try {
+    if (typeof raw === "string") {
+      // If format looks like DD-MM-YYYY, convert
+      if (/^\d{2}-\d{2}-\d{4}/.test(raw)) {
+        const [dd, mm, yyyy] = raw.substring(0, 10).split("-");
+        return `${yyyy}-${mm}-${dd}`;
+      }
+      // If already YYYY-MM-DD or ISO-like, just take first 10 characters
+      if (/^\d{4}-\d{2}-\d{2}/.test(raw)) {
+        return raw.substring(0, 10);
+      }
+      // Fallback: try Date parsing
+      const d = new Date(raw);
+      if (!Number.isNaN(d.getTime())) {
+        return d.toISOString().substring(0, 10);
+      }
+      return null;
+    }
+    const d = new Date(raw);
+    if (!Number.isNaN(d.getTime())) {
+      return d.toISOString().substring(0, 10);
+    }
+  } catch (e) {
+    console.log("normalizeRunDate error for value:", raw, e);
+  }
+  return null;
+}
+
+
+function getCookie(name) {
+  const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+  return v ? v.pop() : '';
+}
+
+
+function showLoader() {
+  document.getElementById("loader-overlay").style.display = "flex";
+}
+
+function hideLoader() {
+  document.getElementById("loader-overlay").style.display = "none";
+}
+
+
+
+/* -------------------------------
+   SEARCH + LOAD DATA
+--------------------------------*/
+
+async function runSearch() {
+
+  showLoader();
+
+  const baseParams = new URLSearchParams();
+
+  const client = document.querySelector(".client").value.trim();
+  const env = document.querySelector(".env").value.trim();
+  const module = document.querySelector(".module").value.trim();
+  const batchCode = document.querySelector(".batch-code").value.trim();
+  let statusFilter = document.querySelector(".status").value.trim();
+  const fromDate = document.querySelector(".from-date").value.trim();
+  const toDate = document.querySelector(".to-date").value.trim();
+
+  console.log("Search parameters:", {
+    client, env, module, batchCode, statusFilter, fromDate, toDate
+  });
+
+  // Check if any filters are active
+  const hasFilters = !!(client || env || module || batchCode || statusFilter || fromDate || toDate);
+  runHasFilters = hasFilters;
+
+  if (client) baseParams.append("client", client);
+  if (env) baseParams.append("environment", env);
+  // module and batch_code filtered on frontend only
+  if (fromDate) baseParams.append("fromDate", fromDate);
+  if (toDate) baseParams.append("toDate", toDate);
+
+  // With no filters: fetch only the current runPage (one API call).
+  // With filters: fetch all pages from page 1 so frontend filtering works across all data.
+  runData = [];
+  let backendPage = hasFilters ? 1 : runPage;
+  let keepFetching = true;
+  let lastPag = {};
+
+  try {
+    while (keepFetching) {
+      const params = new URLSearchParams(baseParams);
+      params.append("page", String(backendPage));
+      params.append("page_size", String(runPageSize));
+
+      const apiUrl = `/automationserv/batch_summary?${params.toString()}`;
+      console.log("API URL:", apiUrl);
+
+      const res = await authFetch(apiUrl, {
+        cache: "no-store"
+      });
+
+      const data = await res.json();
+
+      const pageRows = Array.isArray(data.data) ? data.data : [];
+      console.log(`API page ${backendPage} records:`, pageRows.length);
+
+      runData = runData.concat(pageRows);
+
+      const pag = data.pagination || {};
+      lastPag = pag;
+      const hasNextPage = pag.has_next === true || pag.has_next === "true";
+
+      if (hasFilters && hasNextPage) {
+        backendPage = pag.index != null ? Number(pag.index) + 1 : backendPage + 1;
+      } else {
+        keepFetching = false;
+      }
+    }
+
+    console.log("Total records before frontend filters:", runData.length);
+
+    // Log first few records to check date format
+    if (runData.length > 0) {
+      console.log("Sample records with dates:", runData.slice(0, 3).map(item => ({
+        batch_code: item.batch_code,
+        run_date: item.run_date,
+        created_date: item.created_date,
+        date: item.date
+      })));
+    }
+    
+    // Apply robust frontend date filtering based on normalized run date
+    if (fromDate || toDate) {
+      console.log(`Applying frontend date filtering. Original count: ${runData.length}`);
+      runData = runData.filter(item => {
+        const itemDateStr = normalizeRunDate(item);
+        if (!itemDateStr) {
+          console.log("No usable date for item; dropping:", item);
+          return false;
+        }
+
+        let ok = true;
+        if (fromDate && itemDateStr < fromDate) ok = false;
+        if (toDate && itemDateStr > toDate) ok = false;
+
+        if (ok) {
+          console.log(`Γ£ô Date match ${itemDateStr} in [${fromDate || "-Γê₧"} , ${toDate || "+Γê₧"}]`);
+        }
+        return ok;
+      });
+      console.log(`After date filtering: ${runData.length} records`);
+    }
+    
+    // Filter by batch code on frontend if batch code is provided
+    if (batchCode) {
+      console.log(`Filtering ${runData.length} records by batch code: ${batchCode}`);
+      runData = runData.filter(item => {
+        const itemBatchCode = String(item.batch_code || '').toLowerCase();
+        const matches = itemBatchCode.includes(batchCode.toLowerCase());
+        if (matches) {
+          console.log(`  ✔ Match: ${item.batch_code}`);
+        }
+        return matches;
+      });
+      console.log(`After batch code filtering: ${runData.length} records`);
+    }
+    
+    // Filter by module on frontend if module is selected
+    if (module) {
+      runData = runData.filter(item => {
+        // Note: API returns " project_module" with a leading space due to backend quirk
+        const itemModule = String(item[' project_module'] || item.project_module || item.Module || '').toLowerCase().trim();
+        return itemModule === module.toLowerCase().trim();
+      });
+    }
+    
+    // Filter by status on frontend if status filter is selected
+    if (statusFilter) {
+      console.log(`Filtering ${runData.length} records by status: ${statusFilter}`);
+      runData = runData.filter(item => {
+        const rawStatus = item.status;
+        if (!rawStatus || rawStatus === 'None') return false;
+        
+        const statusStr = String(rawStatus).toLowerCase();
+        
+        if (statusFilter === "Completed") {
+          return statusStr.includes('success') || statusStr.includes('pass') || statusStr.includes('completed');
+        } else if (statusFilter === "In Progress") {
+          return statusStr.includes('processing') || statusStr.includes('running') || statusStr.includes('started') || statusStr.includes('in progress');
+        } else if (statusFilter === "Failed") {
+          return statusStr.includes('fail') || statusStr.includes('error');
+        } else if (statusFilter === "Yet to start") {
+          return statusStr.includes('yet to start') || statusStr.includes('pending') || statusStr.includes('not started');
+        }
+        return true;
+      });
+      console.log(`After status filtering: ${runData.length} records`);
+    }
+
+    // Reset UI pagination based on filtered runData
+    const totalRecords = runData.length;
+    const totalPages = totalRecords > 0 ? Math.max(1, Math.ceil(totalRecords / runPageSize)) : 1;
+
+    if (hasFilters) {
+      if (runPage > totalPages) runPage = totalPages;
+      if (runPage < 1) runPage = 1;
+    }
+
+    runHasPrevious = runPage > 1;
+    // Without filters: use backend's has_next since we only fetched one page
+    // With filters: use computed totalPages from all fetched rows
+    runHasNext = hasFilters ? (runPage < totalPages) : (lastPag.has_next === true || lastPag.has_next === "true");
+
+    displayRunPage();
+
+  } catch (err) {
+
+    console.error("Fetch error:", err);
+
+    runData = [];
+    runHasNext = false;
+    runHasPrevious = false;
+
+    displayRunPage();
+
+  } finally {
+
+    hideLoader();
+
+  }
+
+}
+
+
+
+/* -------------------------------
+   DISPLAY TABLE
+--------------------------------*/
+
+function displayRunPage() {
+
+  const tbody = document.getElementById('table-body-run');
+
+  tbody.innerHTML = "";
+
+  if (!runData || runData.length === 0) {
+
+    tbody.innerHTML = `
+<tr>
+<td colspan="10" style="text-align:center;padding:40px;">
+No execution records found
+</td>
+</tr>
+`;
+
+    runPage = 1;
+
+    document.getElementById('currentPageRun').textContent = runPage;
+
+    document.getElementById('prevBtnRun').disabled = true;
+    document.getElementById('nextBtnRun').disabled = true;
+
+    return;
+  }
+
+  const totalRecords = runData.length;
+  const totalPages = totalRecords > 0 ? Math.max(1, Math.ceil(totalRecords / runPageSize)) : 1;
+
+  if (runHasFilters) {
+    if (runPage > totalPages) runPage = totalPages;
+    if (runPage < 1) runPage = 1;
+  }
+
+  const startIndex = (runPage - 1) * runPageSize;
+  const visibleRows = runHasFilters ? runData.slice(startIndex, startIndex + runPageSize) : runData;
+
+
+  visibleRows.forEach((item, index) => {
+
+    const tr = document.createElement('tr');
+
+    // Handle Testcase_scenario_name which can be an object or string
+    let stepName = "N/A";
+    if (item.Testcase_scenario_name) {
+      if (typeof item.Testcase_scenario_name === 'object' && !Array.isArray(item.Testcase_scenario_name)) {
+        // It's an object like {"ECF_maker": "ECF_maker", "ECF_Approver": "ECF_Approver"}
+        stepName = Object.values(item.Testcase_scenario_name).join(' + ');
+      } else if (Array.isArray(item.Testcase_scenario_name)) {
+        stepName = item.Testcase_scenario_name.join(' + ');
+      } else {
+        stepName = String(item.Testcase_scenario_name);
+      }
+    } else if (item.Test_scnarios) {
+      stepName = item.Test_scnarios;
+    }
+
+
+    let statusLabel = 'Yet to start';
+    let statusClass = 'status-yet-to-start';
+
+    const rawStatus = item.status;
+
+    if (rawStatus && rawStatus !== 'None') {
+      // Check if status is a dictionary/object string like "{'ECF_maker':'Processing'}"
+      if (typeof rawStatus === 'string' && (rawStatus.startsWith('{') || rawStatus.startsWith("'{"))) {
+        try {
+          // Clean up the string - handle Python-style dictionaries
+          let cleanedStatus = rawStatus;
+          if (cleanedStatus.startsWith("'") && cleanedStatus.endsWith("'")) {
+            cleanedStatus = cleanedStatus.slice(1, -1);
+          }
+          // Replace single quotes with double quotes for JSON parsing
+          cleanedStatus = cleanedStatus.replace(/'/g, '"');
+          
+          const parsed = JSON.parse(cleanedStatus);
+          
+          // Determine overall status based on values (simplified display)
+          const values = Object.values(parsed).map(v => String(v).toLowerCase());
+          if (values.some(v => v.includes('fail') || v.includes('error'))) {
+            statusLabel = 'Failed';
+            statusClass = 'status-failed';
+          } else if (values.some(v => v.includes('success') || v.includes('pass') || v.includes('completed'))) {
+            statusLabel = 'Completed';
+            statusClass = 'status-success';
+          } else if (values.some(v => v.includes('progress') || v.includes('running') || v.includes('processing'))) {
+            statusLabel = 'In Progress';
+            statusClass = 'status-in-progress';
+          }
+        } catch (e) {
+          console.error('Error parsing status:', e);
+          // Fallback to simple string check
+          const lower = String(rawStatus).toLowerCase();
+          if (lower.includes('success') || lower.includes('pass')) {
+            statusLabel = 'Completed';
+            statusClass = 'status-success';
+          } else if (lower.includes('fail') || lower.includes('error')) {
+            statusLabel = 'Failed';
+            statusClass = 'status-failed';
+          } else if (lower.includes('progress') || lower.includes('running') || lower.includes('processing')) {
+            statusLabel = 'In Progress';
+            statusClass = 'status-in-progress';
+          }
+        }
+      } else {
+        // Simple string status
+        const lower = String(rawStatus).toLowerCase();
+        if (lower.includes('success') || lower.includes('pass')) {
+          statusLabel = 'Completed';
+          statusClass = 'status-success';
+        } else if (lower.includes('fail') || lower.includes('error')) {
+          statusLabel = 'Failed';
+          statusClass = 'status-failed';
+        } else if (lower.includes('progress') || lower.includes('running') || lower.includes('processing')) {
+          statusLabel = 'In Progress';
+          statusClass = 'status-in-progress';
+        }
+      }
+    }
+
+
+    // Format step names properly
+    let formattedSteps = stepName;
+    if (typeof stepName === 'string' && stepName.includes(',')) {
+      formattedSteps = stepName.split(',').map(s => s.trim()).join(' > ');
+    }
+
+    // Determine status icon
+    let statusIcon = '';
+    if (statusLabel === 'Completed') {
+      statusIcon = '<i class="fa-solid fa-circle-check"></i> ';
+    } else if (statusLabel === 'Failed') {
+      statusIcon = '<i class="fa-solid fa-circle-xmark"></i> ';
+    } else if (statusLabel === 'In Progress') {
+      statusIcon = '<i class="fa-solid fa-spinner"></i> ';
+    } else {
+      statusIcon = '<i class="fa-regular fa-circle"></i> ';
+    }
+
+    tr.innerHTML = `
+
+<td>${startIndex + index + 1}</td>
+
+<td data-batch-code="${item.batch_code || ''}" style="font-family:monospace; font-weight:600; color:var(--text-muted);">
+${item.batch_code || 'ΓÇö'}
+</td>
+
+<td>${item.client_name || ''}</td>
+
+<td>${item.environment || ''}</td>
+
+<td>${item.project_module || item.Module || ''}</td>
+
+<td>${item.updated_date || ''}</td>
+
+<td>${item.name || 'ΓÇö'}</td>
+
+<td>
+<span class="${statusClass}">
+${statusIcon}${statusLabel}
+</span>
+</td>
+
+<td>
+<div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+<i class="fa-solid fa-eye action-icon" data-action="view" data-testcode="${item.testcase_code || item.Testcase_code || ''}" data-batch="${item.batch_code || ''}"></i>
+</div>
+</td>
+
+`;
+
+    tbody.appendChild(tr);
+
+  });
+
+
+  document.getElementById('currentPageRun').textContent = runPage;
+
+  document.getElementById('prevBtnRun').disabled = !runHasPrevious;
+
+  document.getElementById('nextBtnRun').disabled = !runHasNext;
+
+}
+
+
+
+/* -------------------------------
+   VIEW TEST CASE SUMMARY
+--------------------------------*/
+
+function viewTestCaseSummary(batchCode) {
+  
+  console.log('Viewing test case summary for batch_code:', batchCode);
+  
+  if (!batchCode || batchCode === '') {
+    alert('No batch code available for this record');
+    return;
+  }
+
+  // Redirect to the run process template form with the batch code parameter
+  window.location.href = `/automationserv/run_processtemplate-form/?batch_code=${encodeURIComponent(batchCode)}`;
+
+}
+
+
+
+/* -------------------------------
+   EVENT LISTENERS
+--------------------------------*/
+
+document.getElementById('btnSearch')
+.addEventListener('click', () => {
+
+  runPage = 1;
+
+  runSearch();
+
+});
+
+
+document.getElementById('btnReset')
+.addEventListener('click', () => {
+
+  document.querySelectorAll("input").forEach(i => i.value = "");
+
+  document.querySelectorAll("select").forEach(s => s.selectedIndex = 0);
+
+  runPage = 1;
+
+  runSearch();
+
+});
+
+
+document.getElementById('btnBulkDownload')
+.addEventListener('click', async () => {
+  
+  // Use the already-filtered data currently shown in the table (runData)
+  // so that Bulk Download exactly matches the Search results, including
+  // date range, client, env, module, batch code, and status filters.
+  const fromDate = document.querySelector(".from-date").value.trim();
+  const toDate = document.querySelector(".to-date").value.trim();
+  const client = document.querySelector(".client").value.trim();
+  const env = document.querySelector(".env").value.trim();
+  const module = document.querySelector(".module").value.trim();
+  const status = document.querySelector(".status").value.trim();
+
+  const btn = document.getElementById('btnBulkDownload');
+  const originalHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Preparing...';
+
+  try {
+    // Always re-run search with current filters before downloading
+    // so runData reflects exactly what the current filters would return
+    await runSearch();
+
+    let filteredData = Array.isArray(runData) ? runData : [];
+
+    console.log(`Bulk download using existing runData. Count: ${filteredData.length}`);
+
+    if (filteredData.length === 0) {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'warning',
+        title: 'No records found',
+        text: 'No records match your filter criteria.',
+        showConfirmButton: false,
+        timer: 3000
+      });
+      return;
+    }
+
+    // Collect batch codes from the filtered results
+    const batchCodes = filteredData
+      .map(item => item.batch_code)
+      .filter(code => !!code);
+
+    if (batchCodes.length === 0) {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'warning',
+        title: 'No batch codes found',
+        text: 'No batch codes in filtered results.',
+        showConfirmButton: false,
+        timer: 3000
+      });
+      return;
+    }
+
+    console.log('Downloading reports for batch codes:', batchCodes);
+    console.log('Date range:', fromDate, 'to', toDate);
+
+    const token = sessionStorage.getItem("authToken");
+    const timestamp = new Date().toISOString().slice(0, 10);
+
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Downloading...';
+
+    // Build params from current filters
+    const batchCode = document.querySelector(".batch-code").value.trim();
+    const downloadParams = new URLSearchParams();
+    if (client)    downloadParams.append("clientname", client);
+    if (env)       downloadParams.append("env", env);
+    if (module)    downloadParams.append("module", module);
+    if (batchCode) downloadParams.append("batch_code", batchCode);
+
+    // Always derive date range from filteredData so the PDF matches exactly
+    // what is shown (including status filter which backend doesn't support)
+    let dlFromDate = fromDate;
+    let dlToDate = toDate;
+    if (filteredData.length > 0) {
+      const dates = filteredData
+        .map(item => normalizeRunDate(item))
+        .filter(Boolean)
+        .sort();
+      if (dates.length) {
+        if (!dlFromDate) dlFromDate = dates[0];
+        if (!dlToDate)   dlToDate   = dates[dates.length - 1];
+      }
+    }
+    if (dlFromDate) downloadParams.append("fromdate", dlFromDate);
+    if (dlToDate)   downloadParams.append("todate", dlToDate);
+
+    const apiUrl = `/automationserv/trstreport?${downloadParams.toString()}`;
+
+    const response = await fetch(apiUrl, {
+      method: "GET",
+      credentials: "same-origin",
+      headers: {
+        "Authorization": token ? `Token ${token}` : "",
+        "X-CSRFToken": getCookie("csrftoken")
+      },
+      cache: "no-store"
+    });
+
+    if (!response.ok) throw new Error(`Server error: ${response.status}`);
+
+    let filename = "Report.pdf";
+
+    const disposition = response.headers.get("Content-Disposition");
+
+    if (disposition && disposition.includes("filename=")) {
+      filename = disposition
+        .split("filename=")[1]
+        .replace(/["']/g, "")
+        .trim();
+    }
+
+    const mergedBlob = await response.blob();
+    if (mergedBlob.size < 100) throw new Error('Downloaded PDF is empty or invalid.');
+
+    const url = URL.createObjectURL(mergedBlob);
+    const link = document.createElement("a");
+    link.style.display = "none";
+    link.href = url;
+    link.download = filename;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'success',
+      title: 'Download Complete!',
+      showConfirmButton: false,
+      timer: 4000
+    });
+  } catch (err) {
+    console.error('Bulk download error:', err);
+    
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'error',
+      title: 'Download Failed',
+      text: err.message,
+      showConfirmButton: false,
+      timer: 4000
+    });
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalHTML;
+  }
+
+});
+
+
+document.getElementById('prevBtnRun')
+.addEventListener('click', () => {
+
+  if (runHasPrevious) {
+
+    runPage--;
+
+    runSearch();
+
+  }
+
+});
+
+
+document.getElementById('nextBtnRun')
+.addEventListener('click', () => {
+
+  if (runHasNext) {
+
+    runPage++;
+
+    runSearch();
+
+  }
+
+});
+
+
+// Event delegation for action icons
+document.getElementById('table-body-run').addEventListener('click', (e) => {
+  const target = e.target;
+  
+  // Check if clicked element is an action icon
+  if (target.classList.contains('action-icon')) {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    const action = target.getAttribute('data-action');
+    const batchCode = target.getAttribute('data-batch');
+    const testCode = target.getAttribute('data-testcode');
+    
+    if (action === 'view') {
+      viewTestCaseSummary(batchCode);
+    }
+  }
+});
+
+
+document.getElementById("addRunBtn").onclick = () =>
+window.location.href = "/automationserv/run_processtemplate-form/";
+
+
+document.querySelector(".logout").onclick = () => {
+
+  sessionStorage.clear();
+
+  window.location.href = "/userserv/authtoken-form/";
+
+};
+
+
+window.onload = () => {
+
+  document.getElementById("usernameDisplay").textContent =
+  sessionStorage.getItem("username") || "Guest User";
+
+  runSearch();
+
+};
+
+// Re-fetch data when user navigates back to this page (browser back/forward cache)
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted) {
+    runSearch();
+  }
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,2535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoFlow | Create & Edit Template</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-light: #eef2ff;
+      --accent: #10b981;
+      --accent-hover: #059669;
+      --bg: #0f172a;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --input-bg: #f8fafc;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
+      --warning: #f59e0b;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    
+    * { box-sizing: border-box; outline: none; margin: 0; padding: 0; }
+    
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+      color: var(--text-main);
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    /* SIDEBAR - PROFESSIONAL STYLE */
+    .sidebar {
+      width: 260px;
+      height: 100vh;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      position: fixed;
+      padding: 30px 20px;
+      z-index: 100;
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .sidebar .logo {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 50px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar .logo:hover {
+      background: rgba(99, 102, 241, 0.15);
+      transform: translateY(-2px);
+    }
+    
+    .sidebar .logo i { 
+      color: var(--primary); 
+      font-size: 24px;
+      filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5));
+    }
+    
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: 12px;
+      color: #94a3b8;
+      text-decoration: none;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .nav-item::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 3px;
+      background: var(--primary);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+    
+    .nav-item.active {
+      background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    }
+    
+    .nav-item.active::before {
+      transform: scaleY(1);
+    }
+    
+    .nav-item:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+      transform: translateX(4px);
+    }
+    
+    .nav-item i {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+    }
+    
+    /* MAIN CONTENT */
+    .main {
+      margin-left: 260px;
+      width: calc(100% - 260px);
+      padding: 32px 40px;
+    }
+    
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+    }
+    
+    header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--bg);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .user-badge {
+      background: white;
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 14px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    /* CARDS */
+    .card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      transition: all 0.3s;
+    }
+    
+    .card:hover {
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card h3 {
+      font-size: 18px;
+      margin: 0 0 24px 0;
+      color: var(--bg);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--primary-light);
+    }
+    
+    .card h3 i {
+      color: var(--primary);
+      font-size: 20px;
+    }
+    
+    /* FORM ELEMENTS */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    
+    .input-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .input-group label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+    
+    .input-group label i {
+      font-size: 13px;
+      color: var(--primary);
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      background: var(--input-bg);
+      border: 2px solid var(--border);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: all 0.2s;
+      color: var(--text-main);
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+    
+    input::placeholder {
+      color: #94a3b8;
+    }
+    
+    /* STEP BLOCKS */
+    .step-block {
+      margin-bottom: 24px;
+      border-radius: 16px;
+      padding: 24px;
+      background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+      border: 2px solid #e5e7eb;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+      transition: all 0.3s;
+    }
+    
+    .step-block:hover {
+      border-color: var(--primary);
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+    }
+    
+    .step-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #e5e7eb;
+      flex-wrap: wrap;
+    }
+    
+    .step-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .step-label {
+      background: var(--primary);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    }
+    
+    .step-name-input {
+      flex: 1;
+      min-width: 280px;
+      max-width: 500px;
+      padding: 10px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+    }
+    
+    .step-header-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* TABLES */
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-top: 16px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 8px;
+      min-width: 860px;
+    }
+    
+    thead {
+      display: none;
+    }
+    
+    tbody tr {
+      transition: all 0.2s;
+    }
+    
+    tbody tr:hover {
+      transform: translateY(-2px);
+    }
+    
+    td {
+      background: #ffffff;
+      padding: 10px 12px;
+      border-top: 1px solid #e5e7eb;
+      border-bottom: 1px solid #e5e7eb;
+      vertical-align: middle;
+    }
+    
+    td:first-child {
+      border-left: 1px solid #e5e7eb;
+      border-radius: 12px 0 0 12px;
+      padding-left: 16px;
+    }
+    
+    td:last-child {
+      border-right: 1px solid #e5e7eb;
+      border-radius: 0 12px 12px 0;
+      padding-right: 16px;
+    }
+    
+    .table-input {
+      border: 2px solid #e2e8f0;
+      background: #f8fafc;
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 13px;
+      border-radius: 10px;
+      color: var(--text-main);
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    
+    .table-input:focus {
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 3px var(--primary-light);
+      outline: none;
+    }
+    
+    .table-input:hover {
+      border-color: #cbd5e1;
+    }
+    
+    select.table-input {
+      cursor: pointer;
+    }
+    
+    /* BUTTONS */
+    .btn {
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .btn:active {
+      transform: scale(0.98);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+    
+    .btn-primary:hover {
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+      transform: translateY(-2px);
+    }
+    
+    .btn-accent {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    
+    .btn-accent:hover {
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+      transform: translateY(-2px);
+    }
+    
+    .btn-outline-danger {
+      background: white;
+      border: 2px solid var(--danger);
+      color: var(--danger);
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
+    }
+    
+    .btn-outline-danger:hover {
+      background: var(--danger);
+      color: white;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+    
+    .btn-reset {
+      background: #ffffff;
+      color: var(--text-muted);
+      border: 2px solid #e5e7eb;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .btn-reset:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+    }
+    
+    .btn-danger {
+      background: var(--danger-light);
+      color: var(--danger);
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      justify-content: center;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
+    }
+    
+    .btn-danger:hover {
+      background: var(--danger);
+      color: white;
+    }
+    
+    /* SUBSTEP STYLES */
+    .substep-row {
+      background: white;
+      transition: all 0.2s;
+    }
+    
+    .substep-row:hover {
+      background: #f9fafb;
+    }
+    
+    .substep-header {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      padding: 12px 16px;
+      border-radius: 12px;
+      margin: 16px 0 12px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 2px solid #bae6fd;
+    }
+    
+    .substep-title {
+      font-weight: 700;
+      color: #0369a1;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .substep-title i {
+      font-size: 14px;
+    }
+    
+    .substep-add-row-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+    }
+    
+    .substep-add-row-btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    
+    /* DRAG AND DROP */
+    .drag-handle {
+      cursor: grab;
+      color: #94a3b8;
+      padding: 4px;
+      transition: color 0.2s;
+    }
+    
+    .drag-handle:hover {
+      color: var(--primary);
+    }
+    
+    .drag-handle:active {
+      cursor: grabbing;
+    }
+    
+    .dragging {
+      opacity: 0.5;
+      background: var(--primary-light);
+    }
+    
+    .drag-over {
+      border-top: 3px solid var(--primary);
+    }
+    
+    /* COLUMN HEADERS */
+    .columns-row td {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-top: 2px solid #e5e7eb;
+      border-bottom: 2px solid #e5e7eb;
+      padding: 10px 12px;
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+    
+    .columns-row td:first-child {
+      border-left: 2px solid #e5e7eb;
+      border-radius: 12px 0 0 12px;
+    }
+    
+    .columns-row td:last-child {
+      border-right: 2px solid #e5e7eb;
+      border-radius: 0 12px 12px 0;
+    }
+    .columns-cell {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .action-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
+
+    /* Notification Toast */
+    .toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9999;
+  pointer-events: none;   /* ADD THIS */
+}
+.toast.show {
+  pointer-events: auto;   /* ADD THIS */
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: 0.2s;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.back-link:focus {
+  outline: none;
+  opacity: 0.8;
+}
+/* Substep Styling */
+.substep-container {
+  background: #f1f5ff;
+  border: 1px solid #dbe3ff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 8px 0 4px;
+}
+
+.substep-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.substep-number {
+  font-weight: 600;
+  color: #6366f1;
+  min-width: 90px;
+}
+
+.substep-name-input {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 13px;
+  background: #ffffff;
+}
+
+.substep-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.substep-add-row-btn {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #10b981;
+  background: #ecfdf5;
+  color: #10b981;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: 0.2s;
+}
+
+.substep-add-row-btn:hover {
+  background: #10b981;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.substep-add-row-btn i {
+  font-size: 10px;
+}
+
+.substep-remove-btn {
+  border-radius: 999px;
+  border: 1px solid #fecaca;
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.substep-remove-btn i {
+  font-size: 10px;
+}
+
+/* Drag handle for rows */
+.drag-handle {
+  cursor: grab;
+  color: #94a3b8;
+  padding: 0 8px;
+  font-size: 14px;
+  user-select: none;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.drag-handle:hover {
+  color: #6366f1;
+}
+
+/* Row being dragged */
+tr.dragging {
+  opacity: 0.5;
+  background: #f1f5f9;
+}
+
+/* Drop zone indicator */
+tr.drag-over {
+  border-top: 3px solid #6366f1;
+}
+
+
+.back-link:hover {
+  opacity: 0.8;
+  transform: translateX(-2px);
+}
+    .toast {
+      min-width: 260px;
+      max-width: 360px;
+      background: #0f172a;
+      color: #e5e7eb;
+      padding: 12px 16px;
+      border-radius: 10px;
+      box-shadow: 0 10px 20px rgba(15,23,42,0.35);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      border: 1px solid rgba(148,163,184,0.4);
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .toast--success { border-color: #22c55e; }
+    .toast--error { border-color: #ef4444; }
+    .toast-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+    .toast--success .toast-icon {
+      background: rgba(34,197,94,0.15);
+      color: #4ade80;
+    }
+    .toast--error .toast-icon {
+      background: rgba(248,113,113,0.15);
+      color: #fca5a5;
+    }
+    .toast-message { flex: 1; }
+    .toast-close {
+      background: transparent;
+      border: none;
+      color: #9ca3af;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    header {
+  position: relative;
+  z-index: 5000;
+}
+
+.user-badge {
+  position: relative;
+  z-index: 6000;
+}
+
+.logout {
+  position: relative;
+  z-index: 7000;
+}
+    .sidebar {
+  position: fixed;
+  z-index: 100;
+}
+    .main {
+  position: relative;
+  z-index: 1;
+}
+
+    /* ============ RESPONSIVE DESIGN ============ */
+    
+    /* Tablets and smaller desktops (1024px and below) */
+    @media (max-width: 1024px) {
+      .sidebar { width: 220px; padding: 20px 15px; }
+      .main { margin-left: 220px; width: calc(100% - 220px); padding: 30px; }
+      header h1 { font-size: 22px; }
+      .form-grid { gap: 16px; }
+      .card { padding: 28px; }
+    }
+
+    /* Tablets (768px and below) */
+    @media (max-width: 768px) {
+      .sidebar { width: 200px; padding: 20px 10px; }
+      .sidebar .logo { font-size: 18px; margin-bottom: 30px; }
+      .nav-item { padding: 12px 14px; font-size: 13px; }
+      
+      .main { margin-left: 200px; width: calc(100% - 200px); padding: 20px; }
+      header { flex-direction: column; align-items: flex-start; gap: 15px; }
+      header h1 { font-size: 20px; }
+      .user-controls { width: 100%; justify-content: space-between; }
+      .user-badge { font-size: 13px; padding: 6px 12px; }
+      
+      .card { padding: 20px; }
+      .card h3 { font-size: 16px; }
+      .form-row { flex-direction: column; gap: 16px; }
+      
+      .btn { padding: 10px 18px; font-size: 13px; }
+      .action-buttons { flex-direction: column; gap: 10px; }
+      .action-buttons .btn { width: 100%; }
+      
+      /* Step cards */
+      .step-card { padding: 20px; }
+      .step-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .step-actions { width: 100%; justify-content: flex-end; }
+      
+      /* Substep cards */
+      .substep-card { padding: 15px; }
+      .substep-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+      
+      /* Table */
+      .table-wrapper { overflow-x: auto; }
+      table { min-width: 800px; }
+      th, td { padding: 10px 12px; font-size: 12px; }
+    }
+
+    /* Mobile devices (480px and below) */
+    @media (max-width: 480px) {
+      .sidebar { 
+        width: 100%; 
+        height: auto; 
+        position: relative; 
+        padding: 15px; 
+      }
+      .sidebar .logo { font-size: 16px; margin-bottom: 20px; }
+      .nav-item { padding: 10px 12px; font-size: 12px; }
+      
+      .main { 
+        margin-left: 0; 
+        width: 100%; 
+        padding: 15px; 
+      }
+      
+      header { gap: 10px; }
+      header h1 { font-size: 18px; }
+      .user-controls { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .user-badge { font-size: 12px; padding: 5px 10px; }
+      
+      .back-link { font-size: 13px; margin-bottom: 15px; }
+      
+      .card { padding: 15px; border-radius: 15px; }
+      .card h3 { font-size: 15px; gap: 8px; }
+      .card h3 i { font-size: 16px; }
+      
+      .form-grid { gap: 12px; }
+      .input-group label { font-size: 10px; }
+      select, input, textarea { padding: 10px 12px; font-size: 13px; }
+      
+      .btn { padding: 10px; font-size: 13px; }
+      
+      /* Step cards */
+      .step-card { padding: 15px; }
+      .step-badge { font-size: 11px; padding: 4px 10px; }
+      .step-name-input { font-size: 14px; padding: 8px 12px; }
+      
+      /* Substep cards */
+      .substep-card { padding: 12px; }
+      .substep-badge { font-size: 10px; padding: 3px 8px; }
+      .substep-name-input { font-size: 13px; padding: 6px 10px; }
+      
+      /* Table */
+      table { min-width: 700px; }
+      th, td { padding: 8px 10px; font-size: 11px; }
+      
+      /* Drag handle */
+      .drag-handle { font-size: 14px; }
+    }
+
+    /* Extra small devices (360px and below) */
+    @media (max-width: 360px) {
+      .main { padding: 10px; }
+      .card { padding: 12px; }
+      header h1 { font-size: 16px; }
+      .btn { font-size: 12px; padding: 8px; }
+      th, td { padding: 6px 8px; font-size: 10px; }
+      table { min-width: 600px; }
+    }
+
+  </style>
+</head>
+
+<body>
+  <aside class="sidebar">
+    <a href="#" class="logo"><i class="fa-solid fa-bolt-lightning"></i> AUTOFLOW</a>
+    <nav>
+      <a href="/automationserv/template_summary-form/" class="nav-item active"><i class="fa-solid fa-layer-group"></i> Templates</a>
+      <a href="/automationserv/run_summary-form/" class="nav-item"><i class="fa-solid fa-play"></i> Run</a>
+<!--      <a href="/automationserv/report_summary-form/" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Report</a>-->
+    </nav>
+  </aside>
+
+  <main class="main">
+    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 2px solid var(--border);">
+
+  <!-- LEFT -->
+  <a href="#" id="backBtn" class="back-link">
+    <i class="fa-solid fa-arrow-left"></i> Back to Summary
+  </a>
+  
+  <!-- CENTER -->
+  <h1 id="pageTitle" style="margin: 0; position: absolute; left: 50%; transform: translateX(-50%); font-size: 28px; font-weight: 800; color: var(--bg);">
+    Create Test Template
+  </h1>
+
+  <!-- RIGHT -->
+  <div class="user-badge">
+    <i class="fa-regular fa-circle-user"></i>
+    <span id="usernameDisplay">Guest Session</span>
+    <a href="#" class="logout" style="color:var(--danger); margin-left:10px; cursor:pointer;" title="Logout">
+      <i class="fa-solid fa-power-off"></i>
+    </a>
+  </div>
+
+</header>
+
+    <section class="card">
+      <h3><i class="fa-solid fa-globe"></i> Global Parameters</h3>
+      <div class="form-row">
+        <div class="input-group">
+          <label><i class="fa-solid fa-file-lines"></i> Overall Scenario Name</label>
+          <input type="text" id="scenarioName" placeholder="e.g. ECF Creation Flow">
+        </div>
+        <div class="input-group">
+          <label><i class="fa-solid fa-building"></i> Client</label>
+          <select id="client">
+              <option value="" disabled selected>Select Client</option>
+              <option value="NF">NF</option>
+              <option value="NAC">NAC</option>
+              <option value="KVB">KVB</option>
+              <option value="VBHC">VBHC</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label><i class="fa-solid fa-server"></i> Environment</label>
+          <select id="env">
+              <option value="" disabled selected>Select Environment</option>
+              <option value="DO">DO</option>
+              <option value="SIT">SIT</option>
+              <option value="UAT">UAT</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label><i class="fa-solid fa-cube"></i> Module</label>
+          <select id="module">
+              <option value="" disabled selected>Select Module</option>
+              <option value="Vendor">Vendor</option>
+              <option value="ECF">ECF</option>
+              <option value="AP">AP</option>
+              <option value="ememo">ememo</option>
+              <option value="TA">TA</option>
+              <option value="PRPO">PRPO</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label><i class="fa-solid fa-link"></i> Environment URL</label>
+          <input type="text" id="environment_url" placeholder="https://">
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h3 style="margin: 0; border: none; padding: 0;"><i class="fa-solid fa-list-check"></i> Field Mapping</h3>
+        <button class="btn btn-primary" onclick="addNewStep()">
+            <i class="fa-solid fa-plus"></i> Add Step
+        </button>
+      </div>
+
+      <div id="stepsContainer"></div>
+
+      <div class="action-bar">
+  <div id="stepCounter" style="color: var(--text-muted); font-size: 14px; font-weight: 600;">
+    Steps: 0
+  </div>
+
+  <div style="display:flex; gap:20px;">
+    <button class="btn btn-reset" onclick="resetTemplate()">
+      <i class="fa-solid fa-rotate-left"></i> Reset
+    </button>
+
+    <button class="btn btn-primary" id="saveDraftBtn" onclick="saveDraft()">
+      <i class="fa-solid fa-floppy-disk"></i> Save
+    </button>
+
+    <button class="btn btn-accent" id="deployBtn" onclick="deployTemplate()">
+      <i class="fa-solid fa-cloud-arrow-up"></i> Submit Template
+    </button>
+  </div>
+</div>
+    </section>
+  </main>
+
+  <!-- Notification Toast -->
+  <div class="toast-container">
+    <div id="toast" class="toast">
+      <div class="toast-icon"><i class="fa-solid fa-info"></i></div>
+      <div class="toast-message" id="toastMessage"></div>
+      <button class="toast-close" type="button" onclick="hideToast()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+
+
+  <script>
+    // --- SIMPLE TOKEN GUARD (frontend-only) ---
+    (function enforceAuth() {
+      const token = sessionStorage.getItem("authToken");
+      if (!token) {
+        sessionStorage.clear();
+        window.location.href = "/userserv/authtoken-form/";
+      }
+    })();
+
+    // --- AUTH-AWARE FETCH WRAPPER ---
+    function authFetch(url, options = {}) {
+      const token = sessionStorage.getItem("authToken");
+      const merged = { credentials: "same-origin", ...(options || {}) };
+      const baseHeaders = (options && options.headers) ? options.headers : {};
+      merged.headers = { ...baseHeaders };
+      if (token) merged.headers["Authorization"] = `Token ${token}`;
+      return fetch(url, merged).then(res => {
+        if (res.status === 401 || res.status === 403) {
+          sessionStorage.clear();
+          window.location.href = "/userserv/authtoken-form/";
+          throw new Error("Unauthorized");
+        }
+        return res;
+      });
+    }
+
+    function goBack() {
+  window.location.href = "/automationserv/template_summary-form/";
+}
+    const stepsContainer = document.getElementById("stepsContainer");
+    let stepIdCounter = 0;
+
+    const DRAFTS_KEY = "draftTemplates_v1";
+
+    function safeJsonParse(raw, fallback) {
+      try { return JSON.parse(raw); } catch { return fallback; }
+    }
+
+    function generateDraftId() {
+      if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
+      return `draft_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+    }
+
+    function loadDrafts() {
+      let drafts = safeJsonParse(localStorage.getItem(DRAFTS_KEY), []);
+      // localStorage might contain "null" (JSON.parse -> null). Always normalize to array.
+      if (!Array.isArray(drafts)) drafts = [];
+
+      // Backward compat: migrate old single draftTemplate (if present) into list
+      const legacy = localStorage.getItem("draftTemplate");
+      if (legacy) {
+        const legacyParsed = safeJsonParse(legacy, null);
+        if (legacyParsed && legacyParsed.payload) {
+          const id = generateDraftId();
+          const now = Date.now();
+          drafts.unshift({
+            id,
+            createdAt: legacyParsed.ts || now,
+            updatedAt: legacyParsed.ts || now,
+            meta: {
+              client_name: legacyParsed.payload.client_name || "",
+              environment: legacyParsed.payload.environment || "",
+              Project_module: legacyParsed.payload.Project_module || "",
+              environment_url: legacyParsed.payload.environment_url || "",
+              Testcase_scenario_name: legacyParsed.payload.Testcase_scenario_name || ""
+            },
+            ui: null,
+            payload: legacyParsed.payload
+          });
+        }
+        localStorage.removeItem("draftTemplate");
+        localStorage.setItem(DRAFTS_KEY, JSON.stringify(drafts));
+      }
+
+      return drafts;
+    }
+
+    function saveDrafts(drafts) {
+      localStorage.setItem(DRAFTS_KEY, JSON.stringify(drafts));
+    }
+
+    function getDraftById(draftId) {
+      if (!draftId) return null;
+      return loadDrafts().find(d => d && d.id === draftId) || null;
+    }
+
+    function deleteDraftById(draftId) {
+      const drafts = loadDrafts().filter(d => d && d.id !== draftId);
+      saveDrafts(drafts);
+    }
+
+    function serializeDraftUiFromForm() {
+      const stepBlocks = document.querySelectorAll(".step-block");
+      const steps = [];
+
+      stepBlocks.forEach((block, idx) => {
+        const tbody = block.querySelector("tbody");
+        const stepName = (block.querySelector(".step-name-input")?.value || `Step_${idx + 1}`).trim();
+
+        const step = { stepName, substeps: [] };
+        let currentSubstep = null;
+
+        const children = tbody ? Array.from(tbody.children) : [];
+        children.forEach(row => {
+          if (row.classList.contains("substep-row")) {
+            const name = (row.querySelector(".substep-name-input")?.value || "").trim();
+            currentSubstep = { name, rows: [] };
+            step.substeps.push(currentSubstep);
+            return;
+          } else if (row.classList.contains("columns-row")) {
+            // skip header row under each substep
+            return;
+          }
+
+          const logKeyEl = row.querySelector(".log-key");
+          const fTypeEl = row.querySelector(".f-type");
+          const fKeyEl = row.querySelector(".f-key");
+          const fValEl = row.querySelector(".f-val");
+          const vTypeEl = row.querySelector(".v-type");
+          if (!logKeyEl || !fTypeEl || !fKeyEl || !fValEl || !vTypeEl) return;
+
+          if (!currentSubstep) {
+            currentSubstep = { name: "general", rows: [] };
+            step.substeps.push(currentSubstep);
+          }
+
+          currentSubstep.rows.push({
+            logKey: logKeyEl.value ?? "",
+            fieldType: fTypeEl.value ?? "id",
+            fieldKey: fKeyEl.value ?? "",
+            fieldValue: fValEl.value ?? "",
+            valueType: vTypeEl.value ?? "static"
+          });
+        });
+
+        steps.push(step);
+      });
+
+      return { steps };
+    }
+
+    function populateFormFromDraftUi(draft) {
+      if (!draft) return;
+
+      const meta = draft.meta || {};
+      if (meta.client_name) document.getElementById("client").value = meta.client_name;
+      if (meta.environment) document.getElementById("env").value = meta.environment;
+      if (meta.Project_module) document.getElementById("module").value = meta.Project_module;
+      document.getElementById("environment_url").value = meta.environment_url || "https://";
+      document.getElementById("scenarioName").value = meta.Testcase_scenario_name || "";
+
+      stepsContainer.innerHTML = "";
+      stepIdCounter = 0;
+
+      const ui = draft.ui;
+      const steps = ui && Array.isArray(ui.steps) ? ui.steps : [];
+      if (steps.length === 0) {
+        addNewStep();
+        updateStepNumbers();
+        return;
+      }
+
+      steps.forEach((stepItem, stepIdx) => {
+        const stepBlock = createStepElement();
+        stepBlock.querySelector(".step-name-input").value = stepItem.stepName || `Step_${stepIdx + 1}`;
+        const tbody = stepBlock.querySelector("tbody");
+        tbody.innerHTML = "";
+
+        const substeps = Array.isArray(stepItem.substeps) ? stepItem.substeps : [];
+        if (substeps.length === 0) {
+          addSubstepHeader(stepBlock.querySelector(".add-substep-btn"));
+        } else {
+          substeps.forEach(sub => {
+            // Create substep header row with name
+            const tr = document.createElement("tr");
+            tr.classList.add("substep-row");
+            tr.innerHTML = `
+  <td colspan="8" style="padding: 12px 16px; background: #f1f5ff; border: 1px solid #dbe3ff; border-radius: 10px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+      <span style="font-weight: 600; color: #6366f1; min-width: 90px;"></span>
+      <input type="text"
+             class="substep-name-input"
+             placeholder="Enter Substep Name"
+             style="flex: 1; padding: 6px 10px; border-radius: 6px; border: 1px solid #d1d5db; font-size: 13px; background: #ffffff;"
+             value="${(sub && sub.name) ? String(sub.name).replace(/"/g, '&quot;') : ""}">
+      <button type="button"
+              class="substep-remove-btn"
+              style="border-radius: 999px; border: 1px solid #fecaca; background: #fee2e2; color: #b91c1c; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"
+              onclick="removeSubstep(this)">
+        <i class="fa-solid fa-xmark"></i>
+        Remove
+      </button>
+    </div>
+  </td>
+`;
+            tbody.appendChild(tr);
+
+            addColumnsHeaderRow(tbody);
+
+            const rows = sub && Array.isArray(sub.rows) ? sub.rows : [];
+            if (rows.length === 0) {
+              addRow(null, tbody);
+            } else {
+              rows.forEach(r => {
+                addRow(null, tbody, {
+                  lKey: r.logKey ?? "",
+                  fType: r.fieldType ?? "id",
+                  fKey: r.fieldKey ?? "",
+                  fVal: r.fieldValue ?? "",
+                  vType: r.valueType ?? "static"
+                });
+              });
+            }
+          });
+        }
+
+        updateSubstepNumbers(stepBlock);
+      });
+
+      updateStepNumbers();
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+  document.getElementById("usernameDisplay").textContent =
+    sessionStorage.getItem("username") || "Guest Session";
+  const logoutBtn = document.querySelector(".logout");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      sessionStorage.clear();
+      window.location.href = "/userserv/authtoken-form/";
+    });
+  }
+  const backBtn = document.getElementById("backBtn");
+  if (backBtn) {
+    backBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      window.location.href = "/automationserv/template_summary-form/";
+    });
+  }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const templateId = urlParams.get('id');
+  const draftId = urlParams.get('draft');
+  const statusParam = urlParams.get('status'); // 1 = Draft, 2 = Submitted
+
+  if (templateId) {
+    document.getElementById("pageTitle").textContent =
+      "Edit Test Template #" + templateId;
+
+    const deployBtn = document.getElementById("deployBtn");
+    // If status=1 (draft), keep label as 'Submit Template'; otherwise show 'Update Template'
+    if (statusParam === "2") {
+      deployBtn.innerHTML =
+        '<i class="fa-solid fa-floppy-disk"></i> Update Template';
+    } else {
+      deployBtn.innerHTML =
+        '<i class="fa-solid fa-cloud-arrow-up"></i> Submit Template';
+    }
+
+    await loadEditData(templateId);
+  } else if (draftId) {
+    // Load explicit draft by id
+    const draft = getDraftById(draftId);
+    if (draft && draft.ui) {
+      document.getElementById("pageTitle").textContent = "Draft Template";
+      populateFormFromDraftUi(draft);
+      showToast("Draft loaded. Continue where you left off.", "success");
+    } else if (draft && draft.payload) {
+      // legacy fallback
+      populateFormFromRecord(draft.payload);
+      showToast("Draft loaded (legacy).", "success");
+    } else {
+      addNewStep();
+      showToast("Draft not found. Starting a new template.", "error");
+    }
+  } else {
+    // Fresh template creation (do NOT auto-load drafts)
+    addNewStep();
+  }
+});
+
+    // --- Populate form from record or payload (shared by loadEditData and loadFromTemplateSummaryOrStorage) ---
+    function populateFormFromRecord(record) {
+      const client = record.client_name || record.client;
+      const env = record.environment || record.env;
+      const module = record.project_module || record.Project_module;
+      const scenarioName = record.Testcase_scenario_name || record.Testcase_scenario_name;
+      const envUrl = record.url || record.environment_url;
+      if (client) document.getElementById("client").value = client;
+      if (env) document.getElementById("env").value = env;
+      if (module) document.getElementById("module").value = module;
+      document.getElementById("scenarioName").value = Array.isArray(scenarioName) ? scenarioName.join(", ") : (scenarioName || "");
+      document.getElementById("environment_url").value = envUrl || "https://";
+
+      let templateObj = {};
+      const rawTemplate = record.Testcase_scenario_template;
+      if (!rawTemplate) return addNewStep(), updateStepNumbers();
+
+      if (typeof rawTemplate === "string") {
+        try { templateObj = JSON.parse(rawTemplate); } catch (e) { templateObj = {}; }
+      } else if (rawTemplate && typeof rawTemplate === "object") {
+        templateObj = rawTemplate;
+      }
+      const stepList = Array.isArray(templateObj.data) ? templateObj.data : [];
+      stepsContainer.innerHTML = "";
+
+      if (stepList.length > 0) {
+        stepList.forEach((stepObj, stepIdx) => {
+          if (!stepObj || typeof stepObj !== "object") return;
+          const stepBlock = createStepElement();
+          const tbody = stepBlock.querySelector("tbody");
+          stepBlock.querySelector(".step-name-input").value = stepObj.Testcase_scnarios || `Step_${stepIdx + 1}`;
+
+          Object.keys(stepObj).forEach(key => {
+            if (key === "Testcase_scnarios") return;
+            const fields = stepObj[key];
+            if (fields && typeof fields === "object" && !Array.isArray(fields)) {
+              // Recreate substep header for this screen group
+              const substepTr = document.createElement("tr");
+              substepTr.classList.add("substep-row");
+              substepTr.innerHTML = `
+  <td colspan="8" style="padding: 12px 16px; background: #f1f5ff; border: 1px solid #dbe3ff; border-radius: 10px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+      <span style="font-weight: 600; color: #6366f1; min-width: 90px;"></span>
+      <input type="text"
+             class="substep-name-input"
+             placeholder="Enter Substep Name"
+             style="flex: 1; padding: 6px 10px; border-radius: 6px; border: 1px solid #d1d5db; font-size: 13px; background: #ffffff;"
+             value="${key}">
+      <button type="button"
+              class="substep-remove-btn"
+              style="border-radius: 999px; border: 1px solid #fecaca; background: #fee2e2; color: #b91c1c; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"
+              onclick="removeSubstep(this)">
+        <i class="fa-solid fa-xmark"></i>
+        Remove
+      </button>
+    </div>
+  </td>
+`;
+              tbody.appendChild(substepTr);
+
+              addColumnsHeaderRow(tbody);
+
+              Object.keys(fields).forEach(logicalKey => {
+                const field = fields[logicalKey] || {};
+                if (field && typeof field === "object") {
+                  addRow(null, tbody, {
+                    lKey: logicalKey,
+                    fType: field.field_type || "id",
+                    fKey: field.field_key || "",
+                    fVal: field.field_value || "",
+                    vType: field.value_type || "static",
+                    sGroup: key
+                  });
+                }
+              });
+            }
+          });
+
+          // Ensure at least one mapping exists
+          if (tbody.querySelectorAll("tr").length === 0) {
+            addSubstepHeader(stepBlock.querySelector(".add-substep-btn"));
+          } else {
+            updateSubstepNumbers(stepBlock);
+          }
+        });
+      } else {
+        addNewStep();
+      }
+      updateStepNumbers();
+    }
+
+    // --- Fallback when test_temp_create returns empty: use localStorage (persists across refresh) or template_summary ---
+    async function loadFromTemplateSummaryOrStorage(runId) {
+      const PENDING_MAX_AGE_MS = 300000;  // 5 min for pending
+      const PERSISTED_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;  // 7 days
+      const idNum = parseInt(runId, 10);
+      if (isNaN(idNum)) { addNewStep(); updateStepNumbers(); return; }
+
+      // 1. Check localStorage persisted by id (survives refresh)
+      let payload = null;
+      try {
+        const raw = localStorage.getItem("templateData_" + idNum);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          const age = parsed.ts ? (Date.now() - parsed.ts) : Infinity;
+          if (parsed.payload && age < PERSISTED_MAX_AGE_MS) {
+            const stepData = parsed.payload.Testcase_scenario_template?.data;
+            if (Array.isArray(stepData) && stepData.length > 0) {
+              payload = parsed.payload;
+              console.log("Loaded template from localStorage, age ms:", age);
+            }
+          } else if (age >= PERSISTED_MAX_AGE_MS) {
+            localStorage.removeItem("templateData_" + idNum);
+          }
+        }
+      } catch (e) { console.warn("templateData parse error:", e); }
+
+      if (payload) {
+        populateFormFromRecord(payload);
+        return;
+      }
+
+      // 2. Check pending (create/update just happened) - try sessionStorage then localStorage
+      const tryLoadPending = (storage) => {
+        try {
+          const raw = storage.getItem("pendingCreatedTemplate");
+          if (!raw) return false;
+          const parsed = JSON.parse(raw);
+          const age = parsed.ts ? (Date.now() - parsed.ts) : Infinity;
+          const storedRunId = parsed.runId != null ? parseInt(parsed.runId, 10) : null;
+          const match = (storedRunId === null) || (storedRunId === idNum);
+          if (parsed.payload && parsed.ts && age < PENDING_MAX_AGE_MS && match) {
+            payload = parsed.payload;
+            sessionStorage.removeItem("pendingCreatedTemplate");
+            localStorage.removeItem("pendingCreatedTemplate");
+            localStorage.removeItem("lastCreatedTemplate");
+            console.log("Found pendingTemplate, age ms:", age);
+            return true;
+          }
+          if (parsed.payload && age >= PENDING_MAX_AGE_MS) {
+            sessionStorage.removeItem("pendingCreatedTemplate");
+            localStorage.removeItem("pendingCreatedTemplate");
+          }
+        } catch (e) { console.warn("pendingCreatedTemplate parse error:", e); }
+        return false;
+      };
+      tryLoadPending(sessionStorage) || tryLoadPending(localStorage);
+
+      const stepData = payload && payload.Testcase_scenario_template?.data;
+      if (payload && Array.isArray(stepData) && stepData.length > 0) {
+        populateFormFromRecord(payload);
+        try { localStorage.setItem("templateData_" + idNum, JSON.stringify({ payload, ts: Date.now() })); } catch (e) {}
+        return;
+      }
+
+      // 3. Check lastCreatedTemplate (for new-tab or cross-session) - use if row is first (most recent) and fresh
+      try {
+        const raw = localStorage.getItem("lastCreatedTemplate");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          const age = parsed.ts ? (Date.now() - parsed.ts) : Infinity;
+          if (parsed.payload && age < PENDING_MAX_AGE_MS) {
+            const p = parsed.payload;
+            const stepData = p.Testcase_scenario_template?.data;
+            if (Array.isArray(stepData) && stepData.length > 0) {
+              let foundRow = null;
+              for (let page = 1; page <= 10; page++) {
+                const res = await authFetch(`/automationserv/template_summary?page=${page}`, {
+                  cache: "no-store"
+                });
+                if (!res.ok) break;
+                const data = await res.json();
+                const rows = Array.isArray(data.data) ? data.data : [];
+                foundRow = rows.find(item =>
+                  (item.id === idNum) || (parseInt(item.id, 10) === idNum) ||
+                  (item.template_id === idNum) || (parseInt(item.template_id, 10) === idNum)
+                );
+                if (foundRow) {
+                  const match = foundRow.client_name === p.client_name && foundRow.environment === p.environment && foundRow.project_module === p.Project_module;
+                  if (match) {
+                    payload = p;
+                    localStorage.removeItem("lastCreatedTemplate");
+                    localStorage.removeItem("pendingCreatedTemplate");
+                    sessionStorage.removeItem("pendingCreatedTemplate");
+                    populateFormFromRecord(payload);
+                    try { localStorage.setItem("templateData_" + idNum, JSON.stringify({ payload, ts: Date.now() })); } catch (e) {}
+                    return;
+                  }
+                  break;
+                }
+                if (rows.length < 10) break;
+              }
+            }
+          }
+        }
+      } catch (e) { console.warn("lastCreatedTemplate parse error:", e); }
+
+      // 4. Fetch template_summary and populate partial data
+      let found = null;
+      for (let page = 1; page <= 10; page++) {
+        const res = await authFetch(`/automationserv/template_summary?page=${page}`, {
+          cache: "no-store"
+        });
+        if (!res.ok) break;
+        const data = await res.json();
+        const rows = Array.isArray(data.data) ? data.data : [];
+        found = rows.find(item =>
+          (item.id === idNum) || (parseInt(item.id, 10) === idNum) ||
+          (item.template_id === idNum) || (parseInt(item.template_id, 10) === idNum)
+        );
+        if (found) break;
+        if (rows.length < 10) break;
+      }
+
+      if (found) {
+        if (found.client_name) document.getElementById("client").value = found.client_name;
+        if (found.environment) document.getElementById("env").value = found.environment;
+        if (found.project_module) document.getElementById("module").value = found.project_module;
+        const sn = found.Testcase_scenario_name;
+        document.getElementById("scenarioName").value = Array.isArray(sn) ? sn.join(", ") : (sn || "");
+        document.getElementById("environment_url").value = "https://";
+        stepsContainer.innerHTML = "";
+        const names = Array.isArray(sn) ? sn : (sn ? [sn] : []);
+        if (names.length > 0) {
+          names.forEach((name, i) => {
+            const stepBlock = createStepElement();
+            stepBlock.querySelector(".step-name-input").value = name || `Step_${i + 1}`;
+            addRow(stepBlock.querySelector(".btn-primary"));
+          });
+        } else addNewStep();
+        updateStepNumbers();
+      } else {
+        addNewStep();
+        updateStepNumbers();
+      }
+    }
+
+    // --- FETCH & POPULATE DATA (EDIT MODE) USING test_temp_create ---
+    async function loadEditData(id) {
+      try {
+        console.log("Fetching template data via test_temp_create for ID:", id);
+
+        // CRITICAL: Backend route is 'test_temp_create' (NO trailing slash)
+        // Django APPEND_SLASH middleware redirects URLs without trailing slash
+        // We intercept the redirect and fix the URL to remove trailing slash
+        const apiUrl = `/automationserv/test_temp_create?id=${encodeURIComponent(id)}`;
+        console.log("Fetching template data from:", apiUrl);
+
+        let res;
+        try {
+          // Use redirect: 'manual' to intercept Django's 301 redirect
+          res = await authFetch(apiUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache'
+            },
+            redirect: 'manual',  // Don't auto-follow redirects
+            cache: 'no-store'   // Don't cache the request
+          });
+
+          // Handle redirect response - Django redirects to add trailing slash
+          if (res.status === 301 || res.status === 302) {
+            const redirectLocation = res.headers.get('Location');
+            console.warn("Django redirected. Location:", redirectLocation);
+
+            // Resolve relative redirect URLs to absolute
+            let resolvedRedirectUrl = redirectLocation;
+            if (redirectLocation && !redirectLocation.startsWith('http')) {
+              // Relative URL - resolve against current page URL (not just origin)
+              // This ensures /automationserv/ prefix is preserved
+              resolvedRedirectUrl = new URL(redirectLocation, window.location.href).toString();
+            }
+
+            // CRITICAL FIX: Remove trailing slash from test_temp_create
+            // Django redirects: /automationserv/test_temp_create/?id=13&_t=...
+            // We need: /automationserv/test_temp_create?id=13&_t=...
+            let fixedUrl = resolvedRedirectUrl;
+
+            // Remove trailing slash before query string
+            fixedUrl = fixedUrl.replace(/\/test_temp_create\/\?/, '/test_temp_create?');
+            // Remove trailing slash at end (if no query)
+            fixedUrl = fixedUrl.replace(/\/test_temp_create\/$/, `/test_temp_create?id=${encodeURIComponent(id)}`);
+            // Remove trailing slash anywhere else in path
+            fixedUrl = fixedUrl.replace(/\/test_temp_create\//, '/test_temp_create');
+
+            console.log("Fixed redirect URL (removed trailing slash):", fixedUrl);
+
+            // Fetch the corrected URL without trailing slash
+            res = await authFetch(fixedUrl, {
+              headers: {
+                'Accept': 'application/json',
+                'Cache-Control': 'no-cache'
+              },
+              cache: 'no-store'
+            });
+          }
+
+          // If still getting redirect or error, try XMLHttpRequest as fallback
+          if ((res.status === 301 || res.status === 302 || res.status === 404) && typeof XMLHttpRequest !== 'undefined') {
+            console.log("Trying XMLHttpRequest fallback...");
+            res = await new Promise((resolve, reject) => {
+              const xhr = new XMLHttpRequest();
+              xhr.open('GET', apiUrl, true);
+              xhr.setRequestHeader('Accept', 'application/json');
+              xhr.withCredentials = true;
+
+              xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                  if (xhr.status >= 200 && xhr.status < 300) {
+                    // Create a Response-like object
+                    const response = new Response(xhr.responseText, {
+                      status: xhr.status,
+                      statusText: xhr.statusText,
+                      headers: new Headers()
+                    });
+                    resolve(response);
+                  } else if (xhr.status === 301 || xhr.status === 302) {
+                    // Handle redirect manually
+                    const location = xhr.getResponseHeader('Location');
+                    if (location) {
+                      let fixedLocation = location.replace(/\/test_temp_create\/\?/, '/test_temp_create?');
+                      fixedLocation = fixedLocation.replace(/\/test_temp_create\/$/, `/test_temp_create?id=${encodeURIComponent(id)}`);
+                      fixedLocation = fixedLocation.replace(/\/test_temp_create\//, '/test_temp_create');
+
+                      const xhr2 = new XMLHttpRequest();
+                      xhr2.open('GET', fixedLocation, true);
+                      xhr2.setRequestHeader('Accept', 'application/json');
+                      xhr2.withCredentials = true;
+                      xhr2.onload = () => {
+                        const response = new Response(xhr2.responseText, {
+                          status: xhr2.status,
+                          statusText: xhr2.statusText
+                        });
+                        resolve(response);
+                      };
+                      xhr2.onerror = reject;
+                      xhr2.send();
+                    } else {
+                      reject(new Error('Redirect without Location header'));
+                    }
+                  } else {
+                    reject(new Error(`HTTP ${xhr.status}: ${xhr.statusText}`));
+                  }
+                }
+              };
+              xhr.onerror = reject;
+              xhr.send();
+            });
+          }
+        } catch (error) {
+          console.error("Fetch error:", error);
+          throw error;
+        }
+
+        if (!res.ok) {
+          let errorText = '';
+          try {
+            errorText = await res.text();
+            console.error("Backend error response:", errorText);
+          } catch (e) {
+            console.error("Could not read error response:", e);
+          }
+
+          // If it's a 500 error, it's likely a backend KeyError (missing 'Steps' field)
+          if (res.status === 500) {
+            console.warn("Backend returned 500 error - likely missing 'Steps' field in database. Continuing with empty form.");
+            // Allow user to continue editing with empty form
+            addNewStep();
+            updateStepNumbers();
+            alert("Warning: Could not load existing template data (backend error). You can still create/edit the template manually.");
+            return;
+          }
+
+          throw new Error(`HTTP error! status: ${res.status}${errorText ? ' - ' + errorText.substring(0, 200) : ''}`);
+        }
+
+        const raw = await res.json();
+        console.log("Raw data received from test_temp_create:", raw);
+
+        // Handle VysfinList format: { data: [...], pagination: {...} }
+        let record = null;
+        if (raw && typeof raw === 'object') {
+          if (Array.isArray(raw.data) && raw.data.length > 0) {
+            record = raw.data[0];
+          } else if (raw.data && !Array.isArray(raw.data)) {
+            // Fallback: if data is not an array, use it directly
+            record = raw.data;
+          } else if (!raw.data && raw.id) {
+            // Fallback: if response is the record itself
+            record = raw;
+          }
+        }
+
+        if (!record || !record.id) {
+          console.warn("test_temp_create returned empty for id:", id, "- trying sessionStorage and template_summary.");
+          await loadFromTemplateSummaryOrStorage(id);
+          return;
+        }
+
+        // Global fields (names follow Aut_Response structure)
+        if (record.client_name) {
+          document.getElementById("client").value = record.client_name;
+        }
+        if (record.environment) {
+          document.getElementById("env").value = record.environment;
+        }
+        if (record.project_module) {
+          document.getElementById("module").value = record.project_module;
+        }
+        if (record.Testcase_scenario_name) {
+          document.getElementById("scenarioName").value = record.Testcase_scenario_name;
+        }
+
+        // environment_url may not be in response, default to https://
+        document.getElementById("environment_url").value =
+         record.url || record.environment_url || "https://";
+
+        // Template steps structure - handle various formats from backend
+        let templateObj = {};
+        const rawTemplate = record.Testcase_scenario_template;
+
+        if (!rawTemplate) {
+          console.warn("Testcase_scenario_template is empty/null");
+          addNewStep();
+          updateStepNumbers();
+          return;
+        }
+
+        // Parse template: could be JSON string or already an object
+        if (typeof rawTemplate === "string") {
+          try {
+            templateObj = JSON.parse(rawTemplate);
+          } catch (err) {
+            console.error("Failed to parse Testcase_scenario_template JSON string:", err, "Raw:", rawTemplate);
+            // Try to handle Python dict-like strings
+            try {
+              // Remove potential Python None/null values
+              const cleaned = rawTemplate.replace(/None/g, 'null').replace(/'/g, '"');
+              templateObj = JSON.parse(cleaned);
+            } catch (err2) {
+              console.error("Failed to parse even after cleaning:", err2);
+              templateObj = {};
+            }
+          }
+        } else if (rawTemplate && typeof rawTemplate === "object") {
+          templateObj = rawTemplate;
+        }
+
+        // Extract step list from template object
+        const stepList = Array.isArray(templateObj.data) ? templateObj.data : [];
+
+        // Clear steps and rebuild from template
+        stepsContainer.innerHTML = "";
+
+        if (stepList.length > 0) {
+          stepList.forEach((stepObj, stepIdx) => {
+            if (!stepObj || typeof stepObj !== 'object') {
+              console.warn(`Skipping invalid step at index ${stepIdx}:`, stepObj);
+              return;
+            }
+
+            const stepBlock = createStepElement();
+            const stepNameInput = stepBlock.querySelector(".step-name-input");
+            const tbody = stepBlock.querySelector("tbody");
+
+            stepNameInput.value = stepObj.Testcase_scnarios || `Step ${stepIdx + 1}`;
+
+            // Process each key in step object (except Testcase_scnarios)
+            Object.keys(stepObj).forEach(key => {
+              if (key === "Testcase_scnarios") return;
+
+              const screenGroup = key;
+              const fields = stepObj[key];
+
+              // Only proceed if we have a fields object/array
+              if (fields && typeof fields === "object") {
+                // Recreate a substep header row for this screen group
+                const substepTr = document.createElement("tr");
+                substepTr.classList.add("substep-row");
+                substepTr.innerHTML = `
+  <td colspan="8" style="padding:0;">
+    <div class="substep-container">
+      <div class="substep-header">
+        <span class="substep-number"></span>
+        <input type="text"
+               class="substep-name-input"
+               placeholder="Enter Substep Name"
+               value="${screenGroup}">
+        <div class="substep-actions">
+          <button type="button"
+                  class="substep-remove-btn"
+                  onclick="removeSubstep(this)">
+            <i class="fa-solid fa-xmark"></i>
+            Remove
+          </button>
+        </div>
+      </div>
+    </div>
+  </td>
+`;
+                tbody.appendChild(substepTr);
+
+                addColumnsHeaderRow(tbody);
+
+                // Handle fields: could be object with logical keys, or array, or other
+                if (Array.isArray(fields)) {
+                  // If fields is an array, process each item
+                  fields.forEach((fieldItem, idx) => {
+                    if (fieldItem && typeof fieldItem === 'object') {
+                      Object.keys(fieldItem).forEach(logicalKey => {
+                        const field = fieldItem[logicalKey] || {};
+                        addRow(null, tbody, {
+                          lKey: logicalKey,
+                          fType: field.field_type || "id",
+                          fKey: field.field_key || "",
+                          fVal: field.field_value || "",
+                          vType: field.value_type || "static",
+                          sGroup: screenGroup
+                        });
+                      });
+                    }
+                  });
+                } else {
+                  // Fields is an object with logical keys
+                  Object.keys(fields).forEach(logicalKey => {
+                    const field = fields[logicalKey] || {};
+                    if (field && typeof field === 'object') {
+                      addRow(null, tbody, {
+                        lKey: logicalKey,
+                        fType: field.field_type || "id",
+                        fKey: field.field_key || "",
+                        fVal: field.field_value || "",
+                        vType: field.value_type || "static",
+                        sGroup: screenGroup
+                      });
+                    }
+                  });
+                }
+              }
+            });
+
+            updateSubstepNumbers(stepBlock);
+          });
+        } else {
+          console.warn("No step data found in template, initializing empty step.");
+          addNewStep();
+        }
+
+        updateStepNumbers();
+        console.log("Template data loaded successfully");
+      } catch (e) {
+        console.error("Fetch error details:", e);
+        alert("Error fetching template data from test_temp_create. Please check browser console for details.\n\nError: " + e.message);
+        // Still allow editing with empty form
+        addNewStep();
+      }
+    }
+    function addSubstepHeader(btn) {
+  const stepBlock = btn.closest(".step-block");
+  const tbody = stepBlock.querySelector("tbody");
+
+  const tr = document.createElement("tr");
+  tr.classList.add("substep-row");
+
+  tr.innerHTML = `
+  <td colspan="8" style="padding:0;">
+    <div class="substep-container">
+      <div class="substep-header">
+        <span class="substep-number"></span>
+        <input type="text"
+               class="substep-name-input"
+               placeholder="Enter Substep Name">
+        <div class="substep-actions">
+          <button type="button"
+                  class="substep-remove-btn"
+                  onclick="removeSubstep(this)">
+            <i class="fa-solid fa-xmark"></i>
+            Remove
+          </button>
+        </div>
+      </div>
+    </div>
+  </td>
+`;
+
+  tbody.appendChild(tr);
+
+  addColumnsHeaderRow(tbody);
+
+  // create first default row automatically
+  addRow(null, tbody);
+
+  updateSubstepNumbers(stepBlock);
+}
+function addColumnsHeaderRow(tbody) {
+  if (!tbody) return;
+  const tr = document.createElement("tr");
+  tr.classList.add("columns-row");
+  tr.innerHTML = `
+    <td class="columns-cell">LOGICAL KEY</td>
+    <td class="columns-cell">FIELD TYPE</td>
+    <td class="columns-cell">FIELD KEY</td>
+    <td class="columns-cell">FIELD VALUE</td>
+    <td class="columns-cell">VALUE TYPE</td>
+    <td class="columns-cell" style="width: 40px; text-align: center;">
+      <button type="button"
+              style="background: var(--accent); color: white; border: none; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);"
+              onmouseover="this.style.background='var(--accent-hover)'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(16, 185, 129, 0.3)';"
+              onmouseout="this.style.background='var(--accent)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(16, 185, 129, 0.2)';"
+              onclick="addRowForSubstep(this)"
+              title="Add Row">
+        <i class="fa-solid fa-plus" style="font-size: 10px;"></i>
+        Add Row
+      </button>
+    </td>
+    <td class="columns-cell" style="width: 30px;"></td>
+  `;
+  tbody.appendChild(tr);
+}
+function removeSubstep(btn) {
+  const substepRow = btn.closest(".substep-row");
+  if (!substepRow) return;
+
+  const tbody = substepRow.closest("tbody");
+  if (!tbody) return;
+
+  // Prevent removing the very last substep of the step
+  const allSubsteps = tbody.querySelectorAll(".substep-row");
+  if (allSubsteps.length <= 1) {
+    showToast("At least one substep is required in each step.", "error");
+    return;
+  }
+
+  // Remove mapping rows belonging to this substep
+  let current = substepRow.nextElementSibling;
+  while (current && !current.classList.contains("substep-row")) {
+    const next = current.nextElementSibling;
+    tbody.removeChild(current);
+    current = next;
+  }
+
+  // Remove the substep header itself
+  tbody.removeChild(substepRow);
+
+  // Renumber remaining substeps
+  const stepBlock = tbody.closest(".step-block");
+  if (stepBlock) {
+    updateSubstepNumbers(stepBlock);
+  }
+}
+    function createStepElement() {
+      stepIdCounter++;
+      const stepDiv = document.createElement("div");
+      stepDiv.className = "step-block";
+      stepDiv.innerHTML = `
+          <div class="step-header">
+            <div class="step-title-group">
+              <span class="step-label">Step</span>
+              <input type="text" class="table-input step-name-input" placeholder="Step Name">
+            </div>
+            <div class="step-header-actions">
+              <button class="btn btn-primary add-substep-btn" onclick="addSubstepHeader(this)">
+                + Add Substep
+              </button>
+              <button class="btn btn-outline-danger" style="border:1px solid var(--danger); color:var(--danger); background:none; padding:5px 10px; border-radius:8px;" onclick="removeStep(this)">
+                <i class="fa-solid fa-xmark"></i> Remove Step
+              </button>
+            </div>
+          </div>
+          <div class="table-wrap">
+          <table>
+            <thead style="display:none;"><tr><th>Logical Key</th><th>Field Type</th><th>Field Key</th><th>Field Value</th><th>Value Type</th><th style="width: 40px;"></th></tr></thead>
+            <tbody></tbody>
+          </table>
+          </div>`;
+      stepsContainer.appendChild(stepDiv);
+      return stepDiv;
+    }
+
+    function addNewStep() {
+  const step = createStepElement();
+
+  const substepBtn = step.querySelector(".add-substep-btn");
+  addSubstepHeader(substepBtn);
+
+  updateStepNumbers();
+}
+
+    function addRow(btn, targetTbody = null, data = null) {
+      const tbody = targetTbody || btn.closest(".step-block").querySelector("tbody");
+      const tr = document.createElement("tr");
+      tr.setAttribute('draggable', 'true');
+      tr.innerHTML = `
+        <td><input class="table-input log-key" value="${data ? data.lKey : ''}"></td>
+        <td><select class="table-input f-type">
+            <option value="id" ${data && data.fType==='id'?'selected':''}>id</option>
+            <option value="value" ${data && data.fType==='value'?'selected':''}>value</option>
+            <option value="name" ${data && data.fType==='name'?'selected':''}>name</option>
+            <option value="xpath" ${data && data.fType==='xpath'?'selected':''}>xpath</option>
+        </select></td>
+        <td><input class="table-input f-key" value="${data ? data.fKey : ''}"></td>
+        <td><input class="table-input f-val" value="${data ? data.fVal : ''}"></td>
+        <td><select class="table-input v-type">
+            <option value="static" ${data && data.vType==='static'?'selected':''}>static</option>
+            <option value="dynamic" ${data && data.vType==='dynamic'?'selected':''}>dynamic</option>
+        </select></td>
+        <td><button class="btn btn-danger" onclick="removeRow(this)"><i class="fa fa-trash"></i></button></td>
+        <td style="width: 30px; text-align: center;">
+          <span class="drag-handle" title="Drag to reorder">
+            <i class="fa-solid fa-grip-vertical"></i>
+          </span>
+        </td>`;
+      
+      // Add drag event listeners
+      tr.addEventListener('dragstart', handleDragStart);
+      tr.addEventListener('dragover', handleDragOver);
+      tr.addEventListener('drop', handleDrop);
+      tr.addEventListener('dragend', handleDragEnd);
+      
+      tbody.appendChild(tr);
+      return tr;
+}
+    function addRowForSubstep(btn) {
+      // Find the tbody that contains this button
+      const tbody = btn.closest("tbody");
+      if (!tbody) return;
+
+      // Find the columns-row (header) that contains this button
+      const columnsRow = btn.closest(".columns-row");
+      if (!columnsRow) return;
+
+      // Find the next substep row after this header
+      let cursor = columnsRow.nextElementSibling;
+      while (cursor && !cursor.classList.contains("substep-row")) {
+        cursor = cursor.nextElementSibling;
+      }
+
+      // Add the new row before the next substep (or at the end if no next substep)
+      const newRow = addRow(null, tbody);
+      if (cursor) {
+        tbody.insertBefore(newRow, cursor);
+      } else {
+        tbody.appendChild(newRow);
+      }
+    }
+function updateSubstepNumbers(stepBlock) {
+  const stepIndex =
+    Array.from(document.querySelectorAll(".step-block"))
+      .indexOf(stepBlock) + 1;
+
+  const headers = stepBlock.querySelectorAll(".substep-row");
+
+  headers.forEach((row, index) => {
+    const label = row.querySelector(".substep-number");
+    if (label) {
+      label.textContent = `Step ${stepIndex}.${index + 1}`;
+    }
+  });
+}
+    function removeStep(btn) {
+      if (document.querySelectorAll(".step-block").length > 1) {
+          btn.closest(".step-block").remove();
+          updateStepNumbers();
+          showToast("Step removed successfully.", "success");
+      } else {
+          showToast("At least one step is required in the template.", "error");
+      }
+    }
+
+    function removeRow(btn) {
+      const tbody = btn.closest("tbody");
+      if(tbody.querySelectorAll("tr").length > 1) btn.closest("tr").remove();
+    }
+
+    function updateStepNumbers() {
+        const steps = document.querySelectorAll(".step-block");
+        steps.forEach((step, idx) => step.querySelector(".step-header span").textContent = `Step ${idx + 1}`);
+        document.getElementById("stepCounter").textContent = `Steps: ${steps.length}`;
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById("toast");
+      const msgEl = document.getElementById("toastMessage");
+      const iconEl = toast.querySelector(".toast-icon i");
+
+      toast.classList.remove("toast--success", "toast--error");
+      if (type === "success") {
+        toast.classList.add("toast--success");
+        iconEl.className = "fa-solid fa-check";
+      } else {
+        toast.classList.add("toast--error");
+        iconEl.className = "fa-solid fa-triangle-exclamation";
+      }
+
+      msgEl.textContent = message;
+      toast.classList.add("show");
+
+      if (toast._timeout) clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(() => hideToast(), 4000);
+    }
+
+    function hideToast() {
+      const toast = document.getElementById("toast");
+      toast.classList.remove("show");
+    }
+
+    function resetTemplate() {
+
+  // Clear draft storage
+  localStorage.removeItem("draftTemplate");
+
+  // Reset global fields
+  document.getElementById("client").selectedIndex = 0;
+  document.getElementById("env").selectedIndex = 0;
+  document.getElementById("module").selectedIndex = 0;
+  document.getElementById("environment_url").value = "https://";
+  document.getElementById("scenarioName").value = "";
+
+  // Clear steps
+  stepsContainer.innerHTML = "";
+  stepIdCounter = 0;
+
+  // Add fresh step
+  addNewStep();
+  updateStepNumbers();
+
+  showToast("Draft cleared successfully. You can start a new template.", "success");
+}
+
+    const SCENARIO_NAME_CACHE_KEY = "templateScenarioNameCache_v1";
+
+    // Build payload for API (shared by Save and Submit). Returns { payload, errorMessage }.
+    function buildTemplatePayload() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const templateId = urlParams.get("id");
+
+      const payload = {
+        client_name: document.getElementById("client").value,
+        environment: document.getElementById("env").value,
+        Project_module: document.getElementById("module").value,
+        Testcase_scenario_name: document.getElementById("scenarioName").value || "Scenario",
+        environment_url: document.getElementById("environment_url").value,
+        steps: document.querySelectorAll(".step-block").length,
+        Testcase_scenario_template: { data: [] }
+      };
+
+      if (templateId) {
+        payload.id = parseInt(templateId, 10);
+      }
+
+      const stepBlocks = document.querySelectorAll(".step-block");
+      stepBlocks.forEach((block, idx) => {
+        const stepName = block.querySelector(".step-name-input").value || `Step_${idx + 1}`;
+        const stepObject = { "Testcase_scnarios": stepName };
+
+        const rows = block.querySelectorAll("tbody tr");
+        rows.forEach(row => {
+          if (row.classList.contains("substep-row") || row.classList.contains("columns-row")) return;
+
+          const logKeyEl = row.querySelector(".log-key");
+          const fTypeEl = row.querySelector(".f-type");
+          const fKeyEl = row.querySelector(".f-key");
+          const fValEl = row.querySelector(".f-val");
+          const vTypeEl = row.querySelector(".v-type");
+
+          if (!logKeyEl || !fTypeEl || !fKeyEl || !fValEl || !vTypeEl) return;
+
+          const logKey = logKeyEl.value.trim();
+          if (!logKey) return;
+
+          let screenGroup = "general";
+          let cursor = row.previousElementSibling;
+          while (cursor && !cursor.classList.contains("substep-row")) cursor = cursor.previousElementSibling;
+          if (cursor && cursor.classList.contains("substep-row")) {
+            const subNameInput = cursor.querySelector(".substep-name-input");
+            const subName = subNameInput ? subNameInput.value.trim() : "";
+            if (subName) screenGroup = subName;
+          }
+
+          if (!stepObject[screenGroup]) stepObject[screenGroup] = {};
+          stepObject[screenGroup][logKey] = {
+            "field_type": fTypeEl.value,
+            "field_key": fKeyEl.value,
+            "field_value": fValEl.value,
+            "value_type": vTypeEl.value
+          };
+        });
+
+        payload.Testcase_scenario_template.data.push(stepObject);
+      });
+
+      if (payload.Testcase_scenario_template.data.length === 0) {
+        return { payload: null, errorMessage: "Please add at least one row of field mapping." };
+      }
+      return { payload, errorMessage: null };
+    }
+
+    async function saveDraft() {
+      const { payload, errorMessage } = buildTemplatePayload();
+      if (errorMessage) {
+        showToast(errorMessage, "error");
+        return;
+      }
+
+      const saveBtn = document.getElementById("saveDraftBtn");
+      const originalHtml = saveBtn ? saveBtn.innerHTML : "";
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Saving...';
+      }
+
+      try {
+        const postUrl = `/automationserv/test_temp_create?value=1`;
+        let res = await authFetch(postUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Cache-Control": "no-cache" },
+          body: JSON.stringify(payload),
+          credentials: "same-origin",
+          redirect: "manual",
+          cache: "no-store"
+        });
+
+        if (res.status === 301 || res.status === 302) {
+          const redirectLocation = res.headers.get("Location");
+          let fixedUrl = redirectLocation && !redirectLocation.startsWith("http")
+            ? new URL(redirectLocation, window.location.href).toString()
+            : redirectLocation;
+          fixedUrl = (fixedUrl || "").replace(/\/test_temp_create\/$/, "/test_temp_create?value=1").replace(/\/test_temp_create\//, "/test_temp_create");
+          if (fixedUrl && !fixedUrl.includes("value=")) fixedUrl += (fixedUrl.indexOf("?") >= 0 ? "&" : "?") + "value=1";
+          if (fixedUrl) res = await authFetch(fixedUrl, { method: "POST", headers: { "Content-Type": "application/json", "Cache-Control": "no-cache" }, body: JSON.stringify(payload), cache: "no-store" });
+        }
+
+        if (!res.ok) {
+          const text = await res.text();
+          showToast("Save failed. Please try again.", "error");
+          console.error("Save (value=1) failed:", text);
+          return;
+        }
+
+        // Clear cached scenario names so Template Summary reloads with latest overall scenario
+        try { localStorage.removeItem(SCENARIO_NAME_CACHE_KEY); } catch (e) {}
+
+        // Persist latest payload for this template id so Template Summary can
+        // show the Overall Scenario Name (even for drafts).
+        try {
+          const urlParamsAfterSave = new URLSearchParams(window.location.search);
+          const templateIdAfterSave = urlParamsAfterSave.get("id");
+          if (templateIdAfterSave) {
+            localStorage.setItem(
+              "templateData_" + templateIdAfterSave,
+              JSON.stringify({ payload, ts: Date.now() })
+            );
+          }
+        } catch (e) {
+          console.warn("Unable to cache template payload after draft save:", e);
+        }
+
+        // Also persist to localStorage for draft list
+        const urlParams = new URLSearchParams(window.location.search);
+        const existingDraftId = urlParams.get("draft");
+        const meta = {
+          client_name: payload.client_name,
+          environment: payload.environment,
+          Project_module: payload.Project_module,
+          Testcase_scenario_name: payload.Testcase_scenario_name || "",
+          environment_url: payload.environment_url || "https://"
+        };
+        const ui = serializeDraftUiFromForm();
+        const drafts = loadDrafts();
+        const now = Date.now();
+        const draftId = existingDraftId || generateDraftId();
+        const existing = drafts.find(d => d && d.id === draftId);
+        if (existing) {
+          existing.updatedAt = now;
+          existing.meta = meta;
+          existing.ui = ui;
+        } else {
+          drafts.unshift({ id: draftId, createdAt: now, updatedAt: now, meta, ui });
+        }
+        saveDrafts(drafts);
+        if (!existingDraftId) {
+          const newUrl = new URL(window.location.href);
+          newUrl.searchParams.set("draft", draftId);
+          window.history.replaceState({}, "", newUrl.toString());
+        }
+
+        showToast("Saved successfully. Redirecting to Summary...", "success");
+        // After a brief delay so the user can see the toast, go back to Template Summary
+        setTimeout(() => {
+          window.location.href = "/automationserv/template_summary-form/";
+        }, 800);
+      } catch (e) {
+        showToast("Network error: " + e.message, "error");
+        console.error("Save draft API error:", e);
+      } finally {
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = originalHtml;
+        }
+      }
+    }
+    async function deployTemplate() {
+        const { payload, errorMessage } = buildTemplatePayload();
+        if (errorMessage) {
+          showToast(errorMessage, "error");
+          return;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const templateId = urlParams.get("id");
+        const btn = document.getElementById("deployBtn");
+        const originalHtml = btn.innerHTML;
+
+        console.log("Submitting Payload:", JSON.stringify(payload, null, 2));
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Submitting...';
+
+        try {
+          // Use same URL pattern as GET - no trailing slash. value=2 = Submit Template (full); value=1 = Save draft (partial).
+          const postUrl = `/automationserv/test_temp_create?value=2`;
+          console.log("POSTing to URL:", postUrl);
+          let res = await authFetch(postUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Cache-Control": "no-cache"
+            },
+            body: JSON.stringify(payload),
+            redirect: 'manual',  // Prevent redirect that might add trailing slash
+            cache: 'no-store'
+          });
+
+          // Handle redirect if Django tries to add trailing slash
+          if (res.status === 301 || res.status === 302) {
+            const redirectLocation = res.headers.get('Location');
+            console.warn("POST got redirect. Location:", redirectLocation);
+
+            // Resolve relative redirect URLs
+            let resolvedRedirectUrl = redirectLocation;
+            if (redirectLocation && !redirectLocation.startsWith('http')) {
+              resolvedRedirectUrl = new URL(redirectLocation, window.location.href).toString();
+            }
+
+            // Remove trailing slash from redirect URL; keep value=2 for Submit
+            let fixedUrl = resolvedRedirectUrl;
+            fixedUrl = fixedUrl.replace(/\/test_temp_create\/$/, '/test_temp_create?value=2');
+            fixedUrl = fixedUrl.replace(/\/test_temp_create\//, '/test_temp_create');
+            if (!fixedUrl.includes('value=')) fixedUrl += (fixedUrl.indexOf('?') >= 0 ? '&' : '?') + 'value=2';
+
+            console.log("Fixed POST redirect URL:", fixedUrl);
+            res = await authFetch(fixedUrl, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Cache-Control": "no-cache"
+              },
+              body: JSON.stringify(payload),
+              credentials: 'same-origin',
+              cache: 'no-store'
+            });
+          }
+
+          const responseText = await res.text();
+
+          if (res.ok) {
+            showToast(templateId ? "Template updated successfully!" : "Template created successfully!", "success");
+
+            // Clear cached scenario names so Template Summary reloads with latest overall scenario
+            try { localStorage.removeItem(SCENARIO_NAME_CACHE_KEY); } catch (e) {}
+
+            // If this was submitted from a draft, remove the draft (frontend-only)
+            try {
+              const params = new URLSearchParams(window.location.search);
+              const draftId = params.get("draft");
+              if (draftId) {
+                deleteDraftById(draftId);
+              }
+            } catch (e) {}
+
+            try {
+              const stored = { payload, ts: Date.now(), runId: templateId ? parseInt(templateId, 10) : null };
+              const str = JSON.stringify(stored);
+              sessionStorage.setItem("pendingCreatedTemplate", str);
+              localStorage.setItem("pendingCreatedTemplate", str);
+              if (templateId) {
+                localStorage.setItem("templateData_" + templateId, JSON.stringify({ payload, ts: Date.now() }));
+              } else {
+                localStorage.setItem("lastCreatedTemplate", JSON.stringify({ payload, ts: Date.now() }));
+              }
+              console.log("Stored template for edit", templateId ? "update" : "create", stored.payload?.Testcase_scenario_template?.data?.length, "steps");
+            } catch (e) { console.warn("Could not store pending template:", e); }
+            setTimeout(() => {
+              window.location.href = "/automationserv/template_summary-form/";
+            }, 1500);
+          } else {
+            showToast("Submission failed. Please check details in summary page.", "error");
+            console.error("Template submission failed:", responseText);
+          }
+        } catch (e) {
+          showToast("Network error: " + e.message, "error");
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = originalHtml;
+        }
+
+    }
+
+    // Drag and Drop functionality for row reordering
+    let draggedRow = null;
+
+    function handleDragStart(e) {
+      draggedRow = this;
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/html', this.innerHTML);
+    }
+
+    function handleDragOver(e) {
+      if (e.preventDefault) {
+        e.preventDefault();
+      }
+      
+      // Don't allow dropping on substep-row or columns-row
+      if (this.classList.contains('substep-row') || this.classList.contains('columns-row')) {
+        return false;
+      }
+      
+      e.dataTransfer.dropEffect = 'move';
+      
+      // Add visual indicator
+      const rows = Array.from(this.parentNode.children);
+      rows.forEach(row => row.classList.remove('drag-over'));
+      
+      if (this !== draggedRow && !this.classList.contains('substep-row') && !this.classList.contains('columns-row')) {
+        this.classList.add('drag-over');
+      }
+      
+      return false;
+    }
+
+    function handleDrop(e) {
+      if (e.stopPropagation) {
+        e.stopPropagation();
+      }
+      
+      // Don't allow dropping on substep-row or columns-row
+      if (this.classList.contains('substep-row') || this.classList.contains('columns-row')) {
+        return false;
+      }
+      
+      if (draggedRow !== this && draggedRow && this) {
+        // Check if both rows are in the same substep
+        const draggedSubstep = getParentSubstep(draggedRow);
+        const targetSubstep = getParentSubstep(this);
+        
+        if (draggedSubstep === targetSubstep) {
+          // Reorder within the same substep
+          const tbody = this.parentNode;
+          const allRows = Array.from(tbody.children);
+          const draggedIndex = allRows.indexOf(draggedRow);
+          const targetIndex = allRows.indexOf(this);
+          
+          if (draggedIndex < targetIndex) {
+            tbody.insertBefore(draggedRow, this.nextSibling);
+          } else {
+            tbody.insertBefore(draggedRow, this);
+          }
+        }
+      }
+      
+      return false;
+    }
+
+    function handleDragEnd(e) {
+      this.classList.remove('dragging');
+      
+      // Remove all drag-over classes
+      const rows = Array.from(this.parentNode.children);
+      rows.forEach(row => row.classList.remove('drag-over'));
+      
+      draggedRow = null;
+    }
+
+    function getParentSubstep(row) {
+      let current = row;
+      while (current && current.previousElementSibling) {
+        current = current.previousElementSibling;
+        if (current.classList.contains('substep-row')) {
+          return current;
+        }
+      }
+      return null;
+    }
+
+  </script>
+</body>
+</html>
